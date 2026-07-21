@@ -1,179 +1,199 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import FlashToast from '@/Components/FlashToast';
+import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
+import {
+    Bell,
+    CalendarDays,
+    ChevronDown,
+    Kanban,
+    LayoutDashboard,
+    ListChecks,
+    Menu,
+    Plus,
+    Settings,
+    Users,
+    X,
+} from 'lucide-react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 
-export default function Authenticated({
+interface NavItem {
+    label: string;
+    href: string;
+    icon: typeof LayoutDashboard;
+    active: boolean;
+    show: boolean;
+}
+
+export default function AuthenticatedLayout({
     header,
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
-    const user = usePage().props.auth.user;
+    const { auth, unreadNotificationCount } = usePage<PageProps>().props;
+    const user = auth.user;
+    const isInternal = user.role !== 'client';
+    const canManage = user.role === 'administrator' || user.role === 'project_manager';
 
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const navItems: NavItem[] = [
+        {
+            label: 'Dashboard',
+            href: route('dashboard'),
+            icon: LayoutDashboard,
+            active: route().current('dashboard'),
+            show: true,
+        },
+        {
+            label: 'My Tasks',
+            href: `${route('tasks.index')}?view=mine`,
+            icon: ListChecks,
+            active: route().current('tasks.index') && route().queryParams?.view !== 'all',
+            show: true,
+        },
+        {
+            label: 'All Tasks',
+            href: `${route('tasks.index')}?view=all`,
+            icon: ListChecks,
+            active: route().current('tasks.index') && route().queryParams?.view === 'all',
+            show: canManage,
+        },
+        {
+            label: 'Task Board',
+            href: route('tasks.board'),
+            icon: Kanban,
+            active: route().current('tasks.board'),
+            show: isInternal,
+        },
+        {
+            label: 'Calendar',
+            href: route('tasks.calendar'),
+            icon: CalendarDays,
+            active: route().current('tasks.calendar'),
+            show: isInternal,
+        },
+        {
+            label: 'Websites',
+            href: route('websites.index'),
+            icon: Menu,
+            active: route().current('websites.*'),
+            show: isInternal,
+        },
+        {
+            label: 'Team',
+            href: '#',
+            icon: Users,
+            active: false,
+            show: canManage,
+        },
+        {
+            label: 'Settings',
+            href: '#',
+            icon: Settings,
+            active: false,
+            show: user.role === 'administrator',
+        },
+    ];
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="border-b border-gray-100 bg-white">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between">
-                        <div className="flex">
-                            <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
-                                </Link>
-                            </div>
+        <div className="min-h-screen bg-zinc-50">
+            <FlashToast />
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </NavLink>
-                            </div>
-                        </div>
-
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div className="relative ms-3">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                {user.name}
-
-                                                <svg
-                                                    className="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </Dropdown.Trigger>
-
-                                    <Dropdown.Content>
-                                        <Dropdown.Link
-                                            href={route('profile.edit')}
-                                        >
-                                            Profile
-                                        </Dropdown.Link>
-                                        <Dropdown.Link
-                                            href={route('logout')}
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <div className="-me-2 flex items-center sm:hidden">
-                            <button
-                                onClick={() =>
-                                    setShowingNavigationDropdown(
-                                        (previousState) => !previousState,
-                                    )
-                                }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    className="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        className={
-                                            !showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        className={
-                                            showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
+            {sidebarOpen && (
                 <div
-                    className={
-                        (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
-                    }
-                >
-                    <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
-
-                    <div className="border-t border-gray-200 pb-1 pt-4">
-                        <div className="px-4">
-                            <div className="text-base font-medium text-gray-800">
-                                {user.name}
-                            </div>
-                            <div className="text-sm font-medium text-gray-500">
-                                {user.email}
-                            </div>
-                        </div>
-
-                        <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                method="post"
-                                href={route('logout')}
-                                as="button"
-                            >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            {header && (
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
+                    className="fixed inset-0 z-30 bg-black/30 lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                />
             )}
 
-            <main>{children}</main>
+            <aside
+                className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-zinc-200 bg-white transition-transform lg:translate-x-0 ${
+                    sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}
+            >
+                <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-5">
+                    <Link href={route('dashboard')} className="text-lg font-semibold text-zinc-900">
+                        RevisionDesk
+                    </Link>
+                    <button className="lg:hidden" onClick={() => setSidebarOpen(false)}>
+                        <X className="h-5 w-5 text-zinc-500" />
+                    </button>
+                </div>
+
+                <div className="px-4 py-4">
+                    <Link
+                        href={route('tasks.create')}
+                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Add New Task
+                    </Link>
+                </div>
+
+                <nav className="space-y-1 px-3">
+                    {navItems
+                        .filter((item) => item.show)
+                        .map((item) => (
+                            <Link
+                                key={item.label}
+                                href={item.href}
+                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                                    item.active
+                                        ? 'bg-emerald-50 text-emerald-800'
+                                        : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
+                                }`}
+                            >
+                                <item.icon className="h-4.5 w-4.5" />
+                                {item.label}
+                            </Link>
+                        ))}
+                </nav>
+            </aside>
+
+            <div className="lg:pl-64">
+                <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-zinc-200 bg-white px-4 sm:px-6">
+                    <button className="lg:hidden" onClick={() => setSidebarOpen(true)}>
+                        <Menu className="h-6 w-6 text-zinc-600" />
+                    </button>
+
+                    <div className="hidden lg:block">{header}</div>
+
+                    <div className="ml-auto flex items-center gap-4">
+                        <button className="relative rounded-full p-2 text-zinc-500 hover:bg-zinc-100">
+                            <Bell className="h-5 w-5" />
+                            {unreadNotificationCount > 0 && (
+                                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white">
+                                    {unreadNotificationCount}
+                                </span>
+                            )}
+                        </button>
+
+                        <Dropdown>
+                            <Dropdown.Trigger>
+                                <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-800">
+                                        {user.name.charAt(0)}
+                                    </span>
+                                    <span className="hidden sm:inline">{user.name}</span>
+                                    <ChevronDown className="h-4 w-4 text-zinc-400" />
+                                </button>
+                            </Dropdown.Trigger>
+                            <Dropdown.Content>
+                                <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                                <Dropdown.Link href={route('logout')} method="post" as="button">
+                                    Log Out
+                                </Dropdown.Link>
+                            </Dropdown.Content>
+                        </Dropdown>
+                    </div>
+                </header>
+
+                {header && (
+                    <div className="border-b border-zinc-200 bg-white px-4 py-4 sm:px-6 lg:hidden">{header}</div>
+                )}
+
+                <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+            </div>
         </div>
     );
 }

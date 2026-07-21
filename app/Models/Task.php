@@ -72,20 +72,14 @@ class Task extends Model
     {
         $prefix = Setting::get('ticket_number_prefix', 'WEB');
 
-        $last = static::withTrashed()
+        $maxNumber = static::withTrashed()
             ->where('ticket_number', 'like', $prefix.'-%')
             ->lockForUpdate()
-            ->orderByRaw('CAST(SUBSTRING_INDEX(ticket_number, "-", -1) AS UNSIGNED) DESC')
-            ->first();
+            ->pluck('ticket_number')
+            ->map(fn (string $ticketNumber) => (int) substr($ticketNumber, strlen($prefix) + 1))
+            ->max() ?? 0;
 
-        $nextNumber = 1;
-
-        if ($last) {
-            $parts = explode('-', $last->ticket_number);
-            $nextNumber = ((int) end($parts)) + 1;
-        }
-
-        return $prefix.'-'.str_pad((string) $nextNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix.'-'.str_pad((string) ($maxNumber + 1), 4, '0', STR_PAD_LEFT);
     }
 
     public function website(): BelongsTo
