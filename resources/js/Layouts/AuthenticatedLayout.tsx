@@ -3,6 +3,7 @@ import FlashToast from '@/Components/FlashToast';
 import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
+    Activity,
     Bell,
     CalendarDays,
     ChevronDown,
@@ -77,6 +78,13 @@ export default function AuthenticatedLayout({
             href: route('websites.index'),
             icon: Menu,
             active: route().current('websites.*'),
+            show: isInternal,
+        },
+        {
+            label: 'Activity Log',
+            href: route('activity-log.index'),
+            icon: Activity,
+            active: route().current('activity-log.index'),
             show: isInternal,
         },
         {
@@ -159,14 +167,17 @@ export default function AuthenticatedLayout({
                     <div className="hidden lg:block">{header}</div>
 
                     <div className="ml-auto flex items-center gap-4">
-                        <button className="relative rounded-full p-2 text-zinc-500 hover:bg-zinc-100">
+                        <Link
+                            href={route('notifications.index')}
+                            className="relative rounded-full p-2 text-zinc-500 hover:bg-zinc-100"
+                        >
                             <Bell className="h-5 w-5" />
                             {unreadNotificationCount > 0 && (
                                 <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white">
                                     {unreadNotificationCount}
                                 </span>
                             )}
-                        </button>
+                        </Link>
 
                         <Dropdown>
                             <Dropdown.Trigger>

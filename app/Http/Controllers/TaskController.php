@@ -12,6 +12,7 @@ use App\Models\TaskActivity;
 use App\Models\User;
 use App\Models\Website;
 use App\Services\AttachmentUploader;
+use App\Services\TaskNotifier;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,8 @@ use Inertia\Response;
 class TaskController extends Controller
 {
     use ScopesTasksToUser;
+
+    public function __construct(private readonly TaskNotifier $notifier) {}
 
     /**
      * Display a listing of the resource.
@@ -175,6 +178,10 @@ class TaskController extends Controller
             return $task;
         });
 
+        if ($task->assigned_to_id) {
+            $this->notifier->assigned($task, $request->user());
+        }
+
         return redirect()->route('tasks.show', $task)->with('success', "Task {$task->ticket_number} created.");
     }
 
@@ -247,9 +254,9 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        DB::transaction(function () use ($request, $task) {
-            $original = $task->only(['status', 'priority', 'assigned_to_id']);
+        $original = $task->only(['status', 'priority', 'assigned_to_id']);
 
+        DB::transaction(function () use ($request, $task, $original) {
             $data = $request->safe()->except(['tag_ids']);
             $data['description'] = HtmlSanitizer::clean($data['description'] ?? null);
 
@@ -261,6 +268,14 @@ class TaskController extends Controller
 
             $this->logChanges($task, $request->user(), $original);
         });
+
+        if ($task->assigned_to_id && $task->assigned_to_id !== $original['assigned_to_id']) {
+            $this->notifier->reassigned($task, $request->user());
+        }
+
+        if ($task->status !== $original['status']) {
+            $this->notifier->statusChanged($task, $request->user(), $task->status);
+        }
 
         return redirect()->route('tasks.show', $task)->with('success', 'Task updated successfully.');
     }
@@ -293,6 +308,15 @@ class TaskController extends Controller
             'new_value' => $newStatus,
         ]);
 
+        $actor = $request->user();
+
+        match ($newStatus) {
+            'ready_for_review' => $this->notifier->readyForReview($task, $actor),
+            'revision_needed' => $this->notifier->revisionRequested($task, $actor),
+            'approved' => $this->notifier->approved($task, $actor),
+            default => $this->notifier->statusChanged($task, $actor, $newStatus),
+        };
+
         return back()->with('success', 'Task status updated.');
     }
 
@@ -314,6 +338,8 @@ class TaskController extends Controller
             'previous_value' => $previousStatus,
             'new_value' => 'revision_needed',
         ]);
+
+        $this->notifier->revisionRequested($task, $request->user());
 
         return back()->with('success', "Task {$task->ticket_number} reopened.");
     }

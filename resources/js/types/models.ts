@@ -192,6 +192,21 @@ export interface Paginated<T> {
     links: { url: string | null; label: string; active: boolean }[];
 }
 
+export interface AppNotification {
+    id: string;
+    type: string;
+    data: {
+        type: string;
+        task_id: number;
+        ticket_number: string;
+        task_title: string;
+        message: string;
+        actor_name: string | null;
+    };
+    read_at: string | null;
+    created_at: string;
+}
+
 export interface TaskPermissions {
     canEdit: boolean;
     canUpdateStatus: boolean;

@@ -6,19 +6,24 @@ use App\Http\Requests\StoreTaskCommentRequest;
 use App\Models\Task;
 use App\Models\TaskComment;
 use App\Services\AttachmentUploader;
+use App\Services\TaskNotifier;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TaskCommentController extends Controller
 {
+    public function __construct(private readonly TaskNotifier $notifier) {}
+
     public function store(StoreTaskCommentRequest $request, Task $task, AttachmentUploader $uploader)
     {
-        DB::transaction(function () use ($request, $task, $uploader) {
+        $isInternal = $request->boolean('is_internal');
+
+        DB::transaction(function () use ($request, $task, $uploader, $isInternal) {
             $comment = $task->comments()->create([
                 'user_id' => $request->user()->id,
                 'body' => HtmlSanitizer::clean($request->validated('body')),
-                'is_internal' => $request->boolean('is_internal'),
+                'is_internal' => $isInternal,
             ]);
 
             if ($request->hasFile('attachments')) {
@@ -30,6 +35,8 @@ class TaskCommentController extends Controller
                 'action' => 'comment_added',
             ]);
         });
+
+        $this->notifier->commentAdded($task, $request->user(), $isInternal);
 
         return back()->with('success', 'Comment added.');
     }
