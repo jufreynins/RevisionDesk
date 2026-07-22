@@ -14,6 +14,7 @@ class TaskAttachmentController extends Controller
         $this->authorize('view', $task);
 
         abort_unless($attachment->task_id === $task->id, 404);
+        abort_unless(Storage::disk('local')->exists($attachment->stored_path), 404, 'This file is no longer available.');
 
         return Storage::disk('local')->download($attachment->stored_path, $attachment->original_name);
     }

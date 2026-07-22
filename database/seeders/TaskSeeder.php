@@ -9,9 +9,16 @@ use App\Models\User;
 use App\Models\Website;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class TaskSeeder extends Seeder
 {
+    /**
+     * A 1x1 transparent PNG, used so seeded attachment records point at a
+     * real file on disk (downloads would otherwise 404/error).
+     */
+    private const PLACEHOLDER_PNG_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+
     /**
      * Run the database seeds.
      */
@@ -98,14 +105,18 @@ class TaskSeeder extends Seeder
                     ]);
                 }
 
-                // Attachment metadata
+                // Attachment metadata — backed by a real placeholder file so downloads work
                 if (fake()->boolean(40)) {
+                    $storedPath = 'task-attachments/'.fake()->uuid().'.png';
+                    $contents = base64_decode(self::PLACEHOLDER_PNG_BASE64);
+                    Storage::disk('local')->put($storedPath, $contents);
+
                     $task->attachments()->create([
                         'uploaded_by_id' => $assignee?->id ?? $requester->id,
                         'original_name' => 'screenshot-'.fake()->numberBetween(1, 999).'.png',
-                        'stored_path' => 'task-attachments/'.fake()->uuid().'.png',
+                        'stored_path' => $storedPath,
                         'mime_type' => 'image/png',
-                        'size_bytes' => fake()->numberBetween(20_000, 2_000_000),
+                        'size_bytes' => strlen($contents),
                         'is_image' => true,
                     ]);
                 }
