@@ -9,6 +9,7 @@ export interface User {
     phone?: string | null;
     is_active: boolean;
     can_view_credentials: boolean;
+    has_completed_tour: boolean;
     email_verified_at?: string | null;
 }
 

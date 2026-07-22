@@ -66,7 +66,7 @@ export default function Calendar({ tasks }: PageProps<CalendarProps>) {
         >
             <Head title="Calendar" />
 
-            <div className="card">
+            <div className="card" data-tour="calendar-view">
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: 'var(--border-color)' }}>
                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                         <div

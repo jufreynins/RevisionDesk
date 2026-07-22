@@ -134,7 +134,7 @@ export default function Index({
                 <StatTile label="Currently Overdue" value={overdueCount} icon={ListChecks} color="yellow" />
             </div>
 
-            <div className="row col-2">
+            <div className="row col-2" data-tour="reports-charts">
                 <ChartCard title="Tasks Completed Over Time">
                     <ResponsiveContainer>
                         <LineChart data={tasksCompletedByDate}>

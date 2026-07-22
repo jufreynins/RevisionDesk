@@ -41,7 +41,11 @@ export default function Index({ settings }: PageProps<SettingsIndexProps>) {
         >
             <Head title="Settings" />
 
-            <form onSubmit={submit} style={{ maxWidth: 760, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <form
+                onSubmit={submit}
+                style={{ maxWidth: 760, display: 'flex', flexDirection: 'column', gap: 16 }}
+                data-tour="settings-form"
+            >
                 <div className="card">
                     <div className="card-header">
                         <div className="card-title">Company</div>

@@ -11,6 +11,7 @@ use App\Http\Controllers\TaskChecklistItemController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskTimeEntryController;
+use App\Http\Controllers\TourController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\WebsiteCredentialController;
@@ -55,6 +56,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+    Route::patch('/tour/complete', [TourController::class, 'complete'])->name('tour.complete');
 
     Route::resource('team', UserController::class)->except('show')->parameters(['team' => 'user']);
 

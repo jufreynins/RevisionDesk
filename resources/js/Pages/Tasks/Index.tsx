@@ -52,7 +52,7 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
         >
             <Head title="Tasks" />
 
-            <div className="card" style={{ marginBottom: 16 }}>
+            <div className="card" style={{ marginBottom: 16 }} data-tour="task-filters">
                 <div className="card-body" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 }}>
                     <form onSubmit={submitSearch} className="input-group" style={{ maxWidth: 240 }}>
                         <Search className="input-icon" width={14} height={14} strokeWidth={1.5} />
@@ -161,7 +161,7 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
                 </div>
             </div>
 
-            <div className="card">
+            <div className="card" data-tour="task-table">
                 <div className="hidden lg:block">
                     <div className="table-responsive">
                         <table className="table">

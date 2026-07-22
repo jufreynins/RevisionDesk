@@ -1,8 +1,10 @@
 import { PriorityBadge } from '@/Components/Badges';
 import AuthenticatedLayout, { PageHeader } from '@/Layouts/AuthenticatedLayout';
+import { consumeAutoStart } from '@/tour/tourStore';
+import { useTour } from '@/tour/useTour';
 import { PageProps } from '@/types';
 import { Task, TaskActivity } from '@/types/models';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import {
     AlertTriangle,
     CalendarClock,
@@ -10,8 +12,10 @@ import {
     Clock,
     ListTodo,
     Plus,
+    Sparkles,
     Users,
 } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface DashboardProps {
     stats: {
@@ -78,6 +82,18 @@ export default function Dashboard({
     recentActivity,
     workloadOverview,
 }: PageProps<DashboardProps>) {
+    const { auth } = usePage<PageProps>().props;
+    const isAdmin = auth.user.role === 'administrator';
+    const canManage = isAdmin || auth.user.role === 'project_manager';
+    const tour = useTour({ isAdmin, canManage });
+
+    useEffect(() => {
+        if (consumeAutoStart(auth.user.has_completed_tour) && !tour.active) {
+            tour.start();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
         <AuthenticatedLayout
             header={
@@ -87,6 +103,10 @@ export default function Dashboard({
                         <h1 className="page-title">Dashboard</h1>
                     </div>
                     <div className="page-actions">
+                        <button onClick={() => tour.start()} className="btn btn-outline" type="button">
+                            <Sparkles width={16} height={16} strokeWidth={1.5} />
+                            Take a Tour
+                        </button>
                         <Link href={route('websites.create')} className="btn btn-outline">
                             <Plus width={16} height={16} strokeWidth={1.5} />
                             Add Website
@@ -101,48 +121,50 @@ export default function Dashboard({
         >
             <Head title="Dashboard" />
 
-            <div className="row col-3">
-                {STAT_CARDS(stats)
-                    .slice(0, 3)
-                    .map((card) => (
-                        <div className="card" key={card.label}>
-                            <div className="stat">
-                                <div className={`stat-icon ${card.color}`}>
-                                    <card.icon width={22} height={22} strokeWidth={1.5} />
-                                </div>
-                                <div className="stat-content">
-                                    <div className="stat-label">{card.label}</div>
-                                    <div className="stat-value-row">
-                                        <span className="stat-value">{card.value}</span>
+            <div data-tour="dashboard-stats">
+                <div className="row col-3">
+                    {STAT_CARDS(stats)
+                        .slice(0, 3)
+                        .map((card) => (
+                            <div className="card" key={card.label}>
+                                <div className="stat">
+                                    <div className={`stat-icon ${card.color}`}>
+                                        <card.icon width={22} height={22} strokeWidth={1.5} />
+                                    </div>
+                                    <div className="stat-content">
+                                        <div className="stat-label">{card.label}</div>
+                                        <div className="stat-value-row">
+                                            <span className="stat-value">{card.value}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-            </div>
+                        ))}
+                </div>
 
-            <div className="row col-3">
-                {STAT_CARDS(stats)
-                    .slice(3)
-                    .map((card) => (
-                        <div className="card" key={card.label}>
-                            <div className="stat">
-                                <div className={`stat-icon ${card.color}`}>
-                                    <card.icon width={22} height={22} strokeWidth={1.5} />
-                                </div>
-                                <div className="stat-content">
-                                    <div className="stat-label">{card.label}</div>
-                                    <div className="stat-value-row">
-                                        <span className="stat-value">{card.value}</span>
+                <div className="row col-3">
+                    {STAT_CARDS(stats)
+                        .slice(3)
+                        .map((card) => (
+                            <div className="card" key={card.label}>
+                                <div className="stat">
+                                    <div className={`stat-icon ${card.color}`}>
+                                        <card.icon width={22} height={22} strokeWidth={1.5} />
+                                    </div>
+                                    <div className="stat-content">
+                                        <div className="stat-label">{card.label}</div>
+                                        <div className="stat-value-row">
+                                            <span className="stat-value">{card.value}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                </div>
             </div>
 
             <div className="row col-8-4">
-                <div className="card">
+                <div className="card" data-tour="dashboard-due">
                     <div className="card-header">
                         <div className="card-title">Upcoming Due Dates</div>
                     </div>

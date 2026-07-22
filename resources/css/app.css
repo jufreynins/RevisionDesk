@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.tour-spotlight {
+    pointer-events: none;
+    z-index: 10000;
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.9),
+        0 0 0 9999px rgba(15, 15, 20, 0.55);
+    transition:
+        top 0.2s ease,
+        left 0.2s ease,
+        width 0.2s ease,
+        height 0.2s ease;
+}
+
+.tour-backdrop {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(15, 15, 20, 0.55);
+}
+
+.tour-tooltip {
+    animation: tour-tooltip-in 0.15s ease;
+}
+
+@keyframes tour-tooltip-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

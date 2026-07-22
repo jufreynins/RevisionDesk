@@ -47,7 +47,7 @@ export default function Index({ websites, filters }: PageProps<WebsitesIndexProp
                         <h1 className="page-title">Websites</h1>
                     </div>
                     <div className="page-actions">
-                        <Link href={route('websites.create')} className="btn btn-primary">
+                        <Link href={route('websites.create')} className="btn btn-primary" data-tour="website-add-btn">
                             <Plus width={16} height={16} strokeWidth={1.5} />
                             Add Website
                         </Link>
@@ -85,14 +85,14 @@ export default function Index({ websites, filters }: PageProps<WebsitesIndexProp
             </div>
 
             {websites.data.length === 0 ? (
-                <div className="card">
+                <div className="card" data-tour="website-list">
                     <div className="card-body" style={{ textAlign: 'center', padding: '48px 16px' }}>
                         <Globe width={32} height={32} strokeWidth={1.5} style={{ margin: '0 auto', color: 'var(--text-muted)' }} />
                         <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>No websites found.</p>
                     </div>
                 </div>
             ) : (
-                <div className="row col-3">
+                <div className="row col-3" data-tour="website-list">
                     {websites.data.map((website) => (
                         <Link key={website.id} href={route('websites.show', website.id)} className="card">
                             <div className="card-body">

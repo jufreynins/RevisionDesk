@@ -1,5 +1,7 @@
 import Dropdown from '@/Components/Dropdown';
 import FlashToast from '@/Components/FlashToast';
+import TourOverlay from '@/Components/TourOverlay';
+import { useTour } from '@/tour/useTour';
 import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
@@ -38,7 +40,9 @@ export default function AuthenticatedLayout({
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const { auth, unreadNotificationCount } = usePage<PageProps>().props;
     const user = auth.user;
-    const canManage = user.role === 'administrator' || user.role === 'project_manager';
+    const isAdmin = user.role === 'administrator';
+    const canManage = isAdmin || user.role === 'project_manager';
+    const tour = useTour({ isAdmin, canManage });
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -133,6 +137,7 @@ export default function AuthenticatedLayout({
     return (
         <>
             <FlashToast />
+            <TourOverlay tour={tour} />
 
             <div
                 className="sidebar-backdrop"
@@ -148,13 +153,14 @@ export default function AuthenticatedLayout({
                     </div>
                 </div>
 
-                <nav className="sidebar-nav">
+                <nav className="sidebar-nav" data-tour="sidebar-nav">
                     <div className="nav-group">
                         <Link
                             href={route('tasks.create')}
                             className="btn btn-primary"
                             style={{ margin: '0 16px 14px', display: 'flex', justifyContent: 'center' }}
                             onClick={() => setSidebarOpen(false)}
+                            data-tour="add-task-btn"
                         >
                             <Plus width={16} height={16} />
                             Add New Task

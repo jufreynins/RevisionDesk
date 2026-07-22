@@ -88,7 +88,7 @@ export default function Index({ users, filters }: PageProps<TeamIndexProps>) {
                 </div>
             </div>
 
-            <div className="card">
+            <div className="card" data-tour="team-table">
                 <div className="table-responsive">
                     <table className="table">
                         <thead>

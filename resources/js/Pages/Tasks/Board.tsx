@@ -58,7 +58,7 @@ export default function Board({ tasksByStatus, websites, filters }: PageProps<Bo
         >
             <Head title="Task Board" />
 
-            <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 16 }}>
+            <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 16 }} data-tour="kanban-board">
                 {STATUS_OPTIONS.map((status) => {
                     const tasks = tasksByStatus[status.value] ?? [];
 

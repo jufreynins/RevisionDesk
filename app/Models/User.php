@@ -35,6 +35,7 @@ class User extends Authenticatable
         'phone',
         'is_active',
         'can_view_credentials',
+        'has_completed_tour',
     ];
 
     /**
@@ -59,6 +60,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'can_view_credentials' => 'boolean',
+            'has_completed_tour' => 'boolean',
         ];
     }
 
