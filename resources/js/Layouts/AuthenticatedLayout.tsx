@@ -13,9 +13,9 @@ import {
     ListChecks,
     Menu,
     Plus,
+    Search,
     Settings,
     Users,
-    X,
 } from 'lucide-react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 
@@ -25,6 +25,11 @@ interface NavItem {
     icon: typeof LayoutDashboard;
     active: boolean;
     show: boolean;
+}
+
+interface NavGroup {
+    label: string;
+    items: NavItem[];
 }
 
 export default function AuthenticatedLayout({
@@ -38,180 +43,238 @@ export default function AuthenticatedLayout({
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const navItems: NavItem[] = [
+    const navGroups: NavGroup[] = [
         {
-            label: 'Dashboard',
-            href: route('dashboard'),
-            icon: LayoutDashboard,
-            active: route().current('dashboard'),
-            show: true,
+            label: 'Workspace',
+            items: [
+                {
+                    label: 'Dashboard',
+                    href: route('dashboard'),
+                    icon: LayoutDashboard,
+                    active: route().current('dashboard'),
+                    show: true,
+                },
+                {
+                    label: 'My Tasks',
+                    href: `${route('tasks.index')}?view=mine`,
+                    icon: ListChecks,
+                    active: route().current('tasks.index') && route().queryParams?.view !== 'all',
+                    show: true,
+                },
+                {
+                    label: 'All Tasks',
+                    href: `${route('tasks.index')}?view=all`,
+                    icon: ListChecks,
+                    active: route().current('tasks.index') && route().queryParams?.view === 'all',
+                    show: canManage,
+                },
+                {
+                    label: 'Task Board',
+                    href: route('tasks.board'),
+                    icon: Kanban,
+                    active: route().current('tasks.board'),
+                    show: isInternal,
+                },
+                {
+                    label: 'Calendar',
+                    href: route('tasks.calendar'),
+                    icon: CalendarDays,
+                    active: route().current('tasks.calendar'),
+                    show: isInternal,
+                },
+            ],
         },
         {
-            label: 'My Tasks',
-            href: `${route('tasks.index')}?view=mine`,
-            icon: ListChecks,
-            active: route().current('tasks.index') && route().queryParams?.view !== 'all',
-            show: true,
+            label: 'Client Work',
+            items: [
+                {
+                    label: 'Websites',
+                    href: route('websites.index'),
+                    icon: Menu,
+                    active: route().current('websites.*'),
+                    show: isInternal,
+                },
+                {
+                    label: 'Activity Log',
+                    href: route('activity-log.index'),
+                    icon: Activity,
+                    active: route().current('activity-log.index'),
+                    show: isInternal,
+                },
+            ],
         },
         {
-            label: 'All Tasks',
-            href: `${route('tasks.index')}?view=all`,
-            icon: ListChecks,
-            active: route().current('tasks.index') && route().queryParams?.view === 'all',
-            show: canManage,
-        },
-        {
-            label: 'Task Board',
-            href: route('tasks.board'),
-            icon: Kanban,
-            active: route().current('tasks.board'),
-            show: isInternal,
-        },
-        {
-            label: 'Calendar',
-            href: route('tasks.calendar'),
-            icon: CalendarDays,
-            active: route().current('tasks.calendar'),
-            show: isInternal,
-        },
-        {
-            label: 'Websites',
-            href: route('websites.index'),
-            icon: Menu,
-            active: route().current('websites.*'),
-            show: isInternal,
-        },
-        {
-            label: 'Activity Log',
-            href: route('activity-log.index'),
-            icon: Activity,
-            active: route().current('activity-log.index'),
-            show: isInternal,
-        },
-        {
-            label: 'Team',
-            href: route('team.index'),
-            icon: Users,
-            active: route().current('team.*'),
-            show: canManage,
-        },
-        {
-            label: 'Reports',
-            href: route('reports.index'),
-            icon: BarChart3,
-            active: route().current('reports.index'),
-            show: canManage,
-        },
-        {
-            label: 'Settings',
-            href: route('settings.index'),
-            icon: Settings,
-            active: route().current('settings.index'),
-            show: user.role === 'administrator',
+            label: 'Admin',
+            items: [
+                {
+                    label: 'Team',
+                    href: route('team.index'),
+                    icon: Users,
+                    active: route().current('team.*'),
+                    show: canManage,
+                },
+                {
+                    label: 'Reports',
+                    href: route('reports.index'),
+                    icon: BarChart3,
+                    active: route().current('reports.index'),
+                    show: canManage,
+                },
+                {
+                    label: 'Settings',
+                    href: route('settings.index'),
+                    icon: Settings,
+                    active: route().current('settings.index'),
+                    show: user.role === 'administrator',
+                },
+            ],
         },
     ];
 
     return (
-        <div className="min-h-screen bg-zinc-50">
+        <>
             <FlashToast />
 
-            {sidebarOpen && (
-                <div
-                    className="fixed inset-0 z-30 bg-black/30 lg:hidden"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
+            <div
+                className="sidebar-backdrop"
+                hidden={!sidebarOpen}
+                onClick={() => setSidebarOpen(false)}
+            />
 
-            <aside
-                className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-zinc-200 bg-white transition-transform lg:translate-x-0 ${
-                    sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                }`}
-            >
-                <div className="flex h-16 items-center justify-between border-b border-zinc-200 px-5">
-                    <Link href={route('dashboard')} className="text-lg font-semibold text-zinc-900">
+            <aside className={`sidebar${sidebarOpen ? ' open' : ''}`} aria-label="Primary navigation">
+                <div className="sidebar-brand">
+                    <div className="brand-icon">R</div>
+                    <div className="brand-name">
                         RevisionDesk
-                    </Link>
-                    <button className="lg:hidden" onClick={() => setSidebarOpen(false)}>
-                        <X className="h-5 w-5 text-zinc-500" />
-                    </button>
+                    </div>
                 </div>
 
-                <div className="px-4 py-4">
-                    <Link
-                        href={route('tasks.create')}
-                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800"
-                    >
-                        <Plus className="h-4 w-4" />
-                        Add New Task
-                    </Link>
-                </div>
+                <nav className="sidebar-nav">
+                    <div className="nav-group">
+                        <Link
+                            href={route('tasks.create')}
+                            className="btn btn-primary"
+                            style={{ margin: '0 16px 14px', display: 'flex', justifyContent: 'center' }}
+                            onClick={() => setSidebarOpen(false)}
+                        >
+                            <Plus width={16} height={16} />
+                            Add New Task
+                        </Link>
+                    </div>
 
-                <nav className="space-y-1 px-3">
-                    {navItems
-                        .filter((item) => item.show)
-                        .map((item) => (
-                            <Link
-                                key={item.label}
-                                href={item.href}
-                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                                    item.active
-                                        ? 'bg-emerald-50 text-emerald-800'
-                                        : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
-                                }`}
-                            >
-                                <item.icon className="h-4.5 w-4.5" />
-                                {item.label}
-                            </Link>
-                        ))}
+                    {navGroups.map((group) => {
+                        const visibleItems = group.items.filter((item) => item.show);
+                        if (visibleItems.length === 0) return null;
+
+                        return (
+                            <div className="nav-group" key={group.label}>
+                                <div className="nav-label">{group.label}</div>
+                                {visibleItems.map((item) => (
+                                    <Link
+                                        key={item.label}
+                                        href={item.href}
+                                        className={`nav-link${item.active ? ' active' : ''}`}
+                                        onClick={() => setSidebarOpen(false)}
+                                    >
+                                        <item.icon className="icon" width={18} height={18} strokeWidth={1.5} />
+                                        <span className="nav-text">{item.label}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        );
+                    })}
                 </nav>
+
+                <div className="sidebar-footer">
+                    <div className="sidebar-user">
+                        <div className="avatar">
+                            {user.name.charAt(0)}
+                            <span className="online" />
+                        </div>
+                        <div className="sidebar-user-info">
+                            <div className="name">{user.name}</div>
+                            <div className="role">{user.role.replace('_', ' ')}</div>
+                        </div>
+                    </div>
+                </div>
             </aside>
 
-            <div className="lg:pl-64">
-                <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-zinc-200 bg-white px-4 sm:px-6">
-                    <button className="lg:hidden" onClick={() => setSidebarOpen(true)}>
-                        <Menu className="h-6 w-6 text-zinc-600" />
+            <header className="topbar">
+                <div className="topbar-left">
+                    <button
+                        className="sidebar-toggle"
+                        type="button"
+                        aria-label="Open menu"
+                        aria-expanded={sidebarOpen}
+                        onClick={() => setSidebarOpen((v) => !v)}
+                    >
+                        <Menu width={20} height={20} strokeWidth={1.5} />
                     </button>
+                    <nav className="breadcrumb" aria-label="Breadcrumb">
+                        <span className="current" aria-current="page">
+                            RevisionDesk
+                        </span>
+                    </nav>
+                </div>
 
-                    <div className="hidden lg:block">{header}</div>
+                <div className="search-box">
+                    <Search className="s-icon" width={14} height={14} strokeWidth={1.5} />
+                    <input type="text" placeholder="Search tasks, websites…" aria-label="Search" readOnly />
+                </div>
 
-                    <div className="ml-auto flex items-center gap-4">
-                        <Link
-                            href={route('notifications.index')}
-                            className="relative rounded-full p-2 text-zinc-500 hover:bg-zinc-100"
-                        >
-                            <Bell className="h-5 w-5" />
-                            {unreadNotificationCount > 0 && (
-                                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white">
-                                    {unreadNotificationCount}
-                                </span>
-                            )}
-                        </Link>
+                <div className="topbar-right">
+                    <Link className="tb-btn tb-notifications" href={route('notifications.index')} title="Notifications">
+                        <Bell width={18} height={18} strokeWidth={1.5} />
+                        {unreadNotificationCount > 0 && <span className="dot" />}
+                    </Link>
 
-                        <Dropdown>
-                            <Dropdown.Trigger>
-                                <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100">
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-800">
-                                        {user.name.charAt(0)}
-                                    </span>
-                                    <span className="hidden sm:inline">{user.name}</span>
-                                    <ChevronDown className="h-4 w-4 text-zinc-400" />
-                                </button>
-                            </Dropdown.Trigger>
-                            <Dropdown.Content>
-                                <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                <Dropdown.Link href={route('logout')} method="post" as="button">
-                                    Log Out
-                                </Dropdown.Link>
-                            </Dropdown.Content>
-                        </Dropdown>
-                    </div>
-                </header>
+                    <Dropdown>
+                        <Dropdown.Trigger>
+                            <button className="tb-avatar" type="button" aria-label="Account menu">
+                                {user.name.charAt(0)}
+                            </button>
+                        </Dropdown.Trigger>
+                        <Dropdown.Content>
+                            <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                            <Dropdown.Link href={route('logout')} method="post" as="button">
+                                Log Out
+                            </Dropdown.Link>
+                        </Dropdown.Content>
+                    </Dropdown>
+                </div>
+            </header>
 
-                {header && (
-                    <div className="border-b border-zinc-200 bg-white px-4 py-4 sm:px-6 lg:hidden">{header}</div>
-                )}
+            <main id="main-content" className="main">
+                <div className="page-wrapper">
+                    {header && (
+                        <div className="page-header">
+                            <div className="page-header-row">{header}</div>
+                        </div>
+                    )}
+                    {children}
+                </div>
+            </main>
+        </>
+    );
+}
 
-                <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+export function PageHeader({
+    title,
+    pretitle,
+    actions,
+}: {
+    title: ReactNode;
+    pretitle?: string;
+    actions?: ReactNode;
+}) {
+    return (
+        <div className="page-header">
+            <div className="page-header-row">
+                <div>
+                    {pretitle && <div className="page-pretitle">{pretitle}</div>}
+                    <h1 className="page-title">{title}</h1>
+                </div>
+                {actions && <div className="page-actions">{actions}</div>}
             </div>
         </div>
     );
