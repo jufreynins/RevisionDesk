@@ -45,161 +45,175 @@ export default function Show({
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-zinc-900">{website.name}</h2>
-                    <div className="flex gap-2">
-                        <Link
-                            href={route('websites.edit', website.id)}
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
-                        >
-                            <Pencil className="h-3.5 w-3.5" /> Edit
+                <>
+                    <div>
+                        <div className="page-pretitle">Client Work</div>
+                        <h1 className="page-title">{website.name}</h1>
+                    </div>
+                    <div className="page-actions">
+                        <Link href={route('websites.edit', website.id)} className="btn btn-outline">
+                            <Pencil width={14} height={14} strokeWidth={1.5} /> Edit
                         </Link>
                         {canManageTeam && (
-                            <button
-                                onClick={destroy}
-                                className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
-                            >
-                                <Trash2 className="h-3.5 w-3.5" /> Archive
+                            <button onClick={destroy} className="btn btn-danger">
+                                <Trash2 width={14} height={14} strokeWidth={1.5} /> Archive
                             </button>
                         )}
                     </div>
-                </div>
+                </>
             }
         >
             <Head title={website.name} />
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div className="space-y-6 lg:col-span-2">
-                    <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-semibold text-zinc-900">Open Tasks ({openTasks.length})</h3>
-                            <Link
-                                href={`${route('tasks.create')}?website_id=${website.id}`}
-                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-800"
-                            >
-                                <Plus className="h-3.5 w-3.5" /> New Task
+            <div className="row col-8-4">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title">Open Tasks ({openTasks.length})</div>
+                            <Link href={`${route('tasks.create')}?website_id=${website.id}`} className="btn btn-primary btn-sm">
+                                <Plus width={14} height={14} strokeWidth={1.5} /> New Task
                             </Link>
                         </div>
+                        <div className="card-body" style={{ padding: '8px 16px' }}>
+                            {openTasks.length === 0 ? (
+                                <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>No open tasks for this website.</p>
+                            ) : (
+                                <ul className="activity-list">
+                                    {openTasks.map((task) => (
+                                        <li className="activity-item" key={task.id}>
+                                            <div style={{ flex: 1 }}>
+                                                <div className="activity-body">
+                                                    <Link href={route('tasks.show', task.id)}>
+                                                        <strong>{task.ticket_number}</strong> · {task.title}
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: 6 }}>
+                                                <PriorityBadge priority={task.priority} />
+                                                <StatusBadge status={task.status} />
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
 
-                        {openTasks.length === 0 ? (
-                            <p className="mt-3 text-sm text-zinc-500">No open tasks for this website.</p>
-                        ) : (
-                            <ul className="mt-3 divide-y divide-zinc-100">
-                                {openTasks.map((task) => (
-                                    <li key={task.id} className="flex items-center justify-between py-2.5">
-                                        <Link
-                                            href={route('tasks.show', task.id)}
-                                            className="text-sm font-medium text-zinc-800 hover:underline"
-                                        >
-                                            {task.ticket_number} · {task.title}
-                                        </Link>
-                                        <div className="flex items-center gap-2">
-                                            <PriorityBadge priority={task.priority} />
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title">Completed Tasks ({completedTasks.length})</div>
+                        </div>
+                        <div className="card-body" style={{ padding: '8px 16px' }}>
+                            {completedTasks.length === 0 ? (
+                                <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>No completed tasks yet.</p>
+                            ) : (
+                                <ul className="activity-list">
+                                    {completedTasks.map((task) => (
+                                        <li className="activity-item" key={task.id}>
+                                            <div className="activity-body">
+                                                <Link href={route('tasks.show', task.id)}>
+                                                    <strong>{task.ticket_number}</strong> · {task.title}
+                                                </Link>
+                                            </div>
                                             <StatusBadge status={task.status} />
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-                        <h3 className="text-sm font-semibold text-zinc-900">
-                            Completed Tasks ({completedTasks.length})
-                        </h3>
-                        {completedTasks.length === 0 ? (
-                            <p className="mt-3 text-sm text-zinc-500">No completed tasks yet.</p>
-                        ) : (
-                            <ul className="mt-3 divide-y divide-zinc-100">
-                                {completedTasks.map((task) => (
-                                    <li key={task.id} className="flex items-center justify-between py-2.5">
-                                        <Link
-                                            href={route('tasks.show', task.id)}
-                                            className="text-sm text-zinc-600 hover:underline"
-                                        >
-                                            {task.ticket_number} · {task.title}
-                                        </Link>
-                                        <StatusBadge status={task.status} />
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-
-                    <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-                        <h3 className="mb-3 text-sm font-semibold text-zinc-900">Recent Activity</h3>
-                        {recentActivity.length === 0 ? (
-                            <p className="text-sm text-zinc-500">No recent activity.</p>
-                        ) : (
-                            <ul className="space-y-2">
-                                {recentActivity.map((activity) => (
-                                    <li key={activity.id} className="text-sm text-zinc-600">
-                                        <Link
-                                            href={route('tasks.show', activity.task_id)}
-                                            className="font-medium text-zinc-900 hover:underline"
-                                        >
-                                            {activity.task?.ticket_number}
-                                        </Link>{' '}
-                                        — {activity.action.replace(/_/g, ' ')} by {activity.user?.name ?? 'system'}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title">Recent Activity</div>
+                        </div>
+                        <div className="card-body" style={{ padding: '8px 16px' }}>
+                            {recentActivity.length === 0 ? (
+                                <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>No recent activity.</p>
+                            ) : (
+                                <ul className="activity-list">
+                                    {recentActivity.map((activity) => (
+                                        <li className="activity-item" key={activity.id}>
+                                            <div className="activity-body">
+                                                <Link href={route('tasks.show', activity.task_id)}>
+                                                    <strong>{activity.task?.ticket_number}</strong>
+                                                </Link>{' '}
+                                                — {activity.action.replace(/_/g, ' ')} by {activity.user?.name ?? 'system'}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                <div className="space-y-6">
-                    <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-                        <h3 className="mb-3 text-sm font-semibold text-zinc-900">Website Information</h3>
-                        <dl className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <dt className="text-zinc-500">Client</dt>
-                                <dd className="text-zinc-800">{website.client_name}</dd>
-                            </div>
-                            <div className="flex justify-between">
-                                <dt className="text-zinc-500">Platform</dt>
-                                <dd className="capitalize text-zinc-800">{website.platform.replace('_', ' ')}</dd>
-                            </div>
-                            <div className="flex justify-between">
-                                <dt className="text-zinc-500">Hosting</dt>
-                                <dd className="text-zinc-800">{website.hosting_provider ?? '—'}</dd>
-                            </div>
-                            <div className="flex justify-between">
-                                <dt className="text-zinc-500">Project Manager</dt>
-                                <dd className="text-zinc-800">{website.project_manager?.name ?? '—'}</dd>
-                            </div>
-                            <div className="flex justify-between">
-                                <dt className="text-zinc-500">Status</dt>
-                                <dd className="capitalize text-zinc-800">{website.status.replace('_', ' ')}</dd>
-                            </div>
-                        </dl>
-                        <a
-                            href={website.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:underline"
-                        >
-                            Visit website <ExternalLink className="h-3.5 w-3.5" />
-                        </a>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title">Website Information</div>
+                        </div>
+                        <div className="card-body">
+                            <dl style={{ fontSize: 13 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                    <dt style={{ color: 'var(--text-muted)' }}>Client</dt>
+                                    <dd>{website.client_name}</dd>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                    <dt style={{ color: 'var(--text-muted)' }}>Platform</dt>
+                                    <dd style={{ textTransform: 'capitalize' }}>{website.platform.replace('_', ' ')}</dd>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                    <dt style={{ color: 'var(--text-muted)' }}>Hosting</dt>
+                                    <dd>{website.hosting_provider ?? '—'}</dd>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                                    <dt style={{ color: 'var(--text-muted)' }}>Project Manager</dt>
+                                    <dd>{website.project_manager?.name ?? '—'}</dd>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <dt style={{ color: 'var(--text-muted)' }}>Status</dt>
+                                    <dd style={{ textTransform: 'capitalize' }}>{website.status.replace('_', ' ')}</dd>
+                                </div>
+                            </dl>
+                            <a
+                                href={website.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ marginTop: 14, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13 }}
+                            >
+                                Visit website <ExternalLink width={14} height={14} strokeWidth={1.5} />
+                            </a>
+                        </div>
                     </div>
 
-                    <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-                        <h3 className="mb-3 text-sm font-semibold text-zinc-900">Assigned Team Members</h3>
-                        {website.team_members && website.team_members.length > 0 ? (
-                            <ul className="space-y-2 text-sm text-zinc-700">
-                                {website.team_members.map((member) => (
-                                    <li key={member.id}>{member.name}</li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-sm text-zinc-500">No team members assigned.</p>
-                        )}
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title">Assigned Team Members</div>
+                        </div>
+                        <div className="card-body">
+                            {website.team_members && website.team_members.length > 0 ? (
+                                <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13 }}>
+                                    {website.team_members.map((member) => (
+                                        <li key={member.id}>{member.name}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>No team members assigned.</p>
+                            )}
+                        </div>
                     </div>
 
                     {website.notes && (
-                        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-                            <h3 className="mb-2 text-sm font-semibold text-zinc-900">Notes</h3>
-                            <p className="whitespace-pre-line text-sm text-zinc-600">{website.notes}</p>
+                        <div className="card">
+                            <div className="card-header">
+                                <div className="card-title">Notes</div>
+                            </div>
+                            <div className="card-body">
+                                <p style={{ fontSize: 13, color: 'var(--text-secondary)', whiteSpace: 'pre-line' }}>
+                                    {website.notes}
+                                </p>
+                            </div>
                         </div>
                     )}
 

@@ -4,10 +4,17 @@ import UserForm from './UserForm';
 
 export default function Create() {
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold text-zinc-900">Add Team Member</h2>}>
+        <AuthenticatedLayout
+            header={
+                <div>
+                    <div className="page-pretitle">Admin</div>
+                    <h1 className="page-title">Add Team Member</h1>
+                </div>
+            }
+        >
             <Head title="Add Team Member" />
 
-            <div className="mx-auto max-w-2xl">
+            <div style={{ maxWidth: 640 }}>
                 <UserForm submitUrl={route('team.store')} method="post" submitLabel="Create Account" />
             </div>
         </AuthenticatedLayout>

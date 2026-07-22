@@ -13,12 +13,12 @@ const STATUS_LABEL: Record<string, string> = {
     archived: 'Archived',
 };
 
-const STATUS_CLASSES: Record<string, string> = {
-    active: 'bg-emerald-50 text-emerald-700',
-    on_hold: 'bg-amber-50 text-amber-700',
-    maintenance: 'bg-blue-50 text-blue-700',
-    completed: 'bg-zinc-100 text-zinc-600',
-    archived: 'bg-zinc-100 text-zinc-500',
+const STATUS_CLASS: Record<string, string> = {
+    active: 'status-green',
+    on_hold: 'status-yellow',
+    maintenance: 'status-blue',
+    completed: 'status-blue',
+    archived: 'status-red',
 };
 
 interface WebsitesIndexProps {
@@ -40,25 +40,39 @@ export default function Index({ websites, filters }: PageProps<WebsitesIndexProp
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold text-zinc-900">Websites</h2>}
+            header={
+                <>
+                    <div>
+                        <div className="page-pretitle">Client Work</div>
+                        <h1 className="page-title">Websites</h1>
+                    </div>
+                    <div className="page-actions">
+                        <Link href={route('websites.create')} className="btn btn-primary">
+                            <Plus width={16} height={16} strokeWidth={1.5} />
+                            Add Website
+                        </Link>
+                    </div>
+                </>
+            }
         >
             <Head title="Websites" />
 
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                <form onSubmit={submitSearch} className="flex items-center gap-2">
-                    <div className="relative">
-                        <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+            <div className="card" style={{ marginBottom: 16 }}>
+                <div className="card-body" style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                    <form onSubmit={submitSearch} className="input-group" style={{ maxWidth: 280 }}>
+                        <Search className="input-icon" width={14} height={14} strokeWidth={1.5} />
                         <input
+                            className="form-control"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search websites or clients..."
-                            className="w-64 rounded-lg border-zinc-300 py-2 pl-9 text-sm focus:border-emerald-600 focus:ring-emerald-600"
                         />
-                    </div>
+                    </form>
                     <select
                         value={filters.status ?? ''}
                         onChange={(e) => filterByStatus(e.target.value)}
-                        className="rounded-lg border-zinc-300 py-2 text-sm focus:border-emerald-600 focus:ring-emerald-600"
+                        className="form-control"
+                        style={{ maxWidth: 200 }}
                     >
                         <option value="">All statuses</option>
                         {Object.entries(STATUS_LABEL).map(([value, label]) => (
@@ -67,60 +81,64 @@ export default function Index({ websites, filters }: PageProps<WebsitesIndexProp
                             </option>
                         ))}
                     </select>
-                </form>
-
-                <Link
-                    href={route('websites.create')}
-                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
-                >
-                    <Plus className="h-4 w-4" /> Add Website
-                </Link>
+                </div>
             </div>
 
             {websites.data.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-zinc-300 bg-white py-16 text-center">
-                    <Globe className="mx-auto h-8 w-8 text-zinc-300" />
-                    <p className="mt-2 text-sm text-zinc-500">No websites found.</p>
+                <div className="card">
+                    <div className="card-body" style={{ textAlign: 'center', padding: '48px 16px' }}>
+                        <Globe width={32} height={32} strokeWidth={1.5} style={{ margin: '0 auto', color: 'var(--text-muted)' }} />
+                        <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>No websites found.</p>
+                    </div>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="row col-3">
                     {websites.data.map((website) => (
-                        <Link
-                            key={website.id}
-                            href={route('websites.show', website.id)}
-                            className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:shadow-md"
-                        >
-                            <div className="flex items-start justify-between">
-                                <div>
-                                    <h3 className="font-semibold text-zinc-900">{website.name}</h3>
-                                    <p className="text-sm text-zinc-500">{website.client_name}</p>
+                        <Link key={website.id} href={route('websites.show', website.id)} className="card">
+                            <div className="card-body">
+                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                                    <div>
+                                        <div className="card-title">{website.name}</div>
+                                        <div className="card-subtitle">{website.client_name}</div>
+                                    </div>
+                                    <span className={`status ${STATUS_CLASS[website.status]}`}>
+                                        {STATUS_LABEL[website.status]}
+                                    </span>
                                 </div>
-                                <span
-                                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASSES[website.status]}`}
+
+                                <dl style={{ marginTop: 14, fontSize: 12, color: 'var(--text-muted)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                                        <dt>Platform</dt>
+                                        <dd style={{ color: 'var(--text-secondary)', textTransform: 'capitalize' }}>
+                                            {website.platform.replace('_', ' ')}
+                                        </dd>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <dt>PM</dt>
+                                        <dd style={{ color: 'var(--text-secondary)' }}>
+                                            {website.project_manager?.name ?? '—'}
+                                        </dd>
+                                    </div>
+                                </dl>
+
+                                <div
+                                    style={{
+                                        marginTop: 14,
+                                        paddingTop: 12,
+                                        borderTop: '1px solid var(--border-color)',
+                                        display: 'flex',
+                                        gap: 16,
+                                        fontSize: 13,
+                                    }}
                                 >
-                                    {STATUS_LABEL[website.status]}
-                                </span>
-                            </div>
-
-                            <dl className="mt-4 space-y-1 text-xs text-zinc-500">
-                                <div className="flex justify-between">
-                                    <dt>Platform</dt>
-                                    <dd className="capitalize text-zinc-700">{website.platform.replace('_', ' ')}</dd>
+                                    <span style={{ color: 'var(--text-secondary)' }}>
+                                        <strong style={{ color: 'var(--text)' }}>{website.open_tasks_count ?? 0}</strong> open
+                                    </span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>
+                                        <strong style={{ color: 'var(--text)' }}>{website.completed_tasks_count ?? 0}</strong>{' '}
+                                        completed
+                                    </span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <dt>PM</dt>
-                                    <dd className="text-zinc-700">{website.project_manager?.name ?? '—'}</dd>
-                                </div>
-                            </dl>
-
-                            <div className="mt-4 flex gap-4 border-t border-zinc-100 pt-3 text-sm">
-                                <span className="text-zinc-600">
-                                    <strong className="text-zinc-900">{website.open_tasks_count ?? 0}</strong> open
-                                </span>
-                                <span className="text-zinc-600">
-                                    <strong className="text-zinc-900">{website.completed_tasks_count ?? 0}</strong>{' '}
-                                    completed
-                                </span>
                             </div>
                         </Link>
                     ))}
@@ -128,16 +146,12 @@ export default function Index({ websites, filters }: PageProps<WebsitesIndexProp
             )}
 
             {websites.last_page > 1 && (
-                <div className="mt-6 flex flex-wrap gap-2">
+                <div className="pagination">
                     {websites.links.map((link, index) => (
                         <Link
                             key={index}
                             href={link.url ?? '#'}
-                            className={`rounded-md px-3 py-1.5 text-sm ${
-                                link.active
-                                    ? 'bg-emerald-700 text-white'
-                                    : 'border border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-50'
-                            } ${!link.url ? 'pointer-events-none opacity-50' : ''}`}
+                            className={`page-link ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`}
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />
                     ))}

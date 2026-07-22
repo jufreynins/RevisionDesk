@@ -13,10 +13,17 @@ interface CreateProps {
 
 export default function Create({ websites, users, tags, defaultWebsiteId }: PageProps<CreateProps>) {
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold text-zinc-900">Add New Task</h2>}>
+        <AuthenticatedLayout
+            header={
+                <div>
+                    <div className="page-pretitle">Workspace</div>
+                    <h1 className="page-title">Add New Task</h1>
+                </div>
+            }
+        >
             <Head title="Add New Task" />
 
-            <div className="mx-auto max-w-4xl">
+            <div style={{ maxWidth: 900 }}>
                 <TaskForm
                     mode="create"
                     websites={websites}

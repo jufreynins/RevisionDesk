@@ -25,22 +25,24 @@ function describeActivity(activity: TaskActivity): string {
 
 export default function ActivityTimeline({ activities }: { activities: TaskActivity[] }) {
     return (
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-sm font-semibold text-zinc-900">Activity History</h3>
-
-            {activities.length === 0 ? (
-                <p className="text-sm text-zinc-500">No activity yet.</p>
-            ) : (
-                <ol className="relative space-y-4 border-l border-zinc-200 pl-4">
-                    {activities.map((activity) => (
-                        <li key={activity.id} className="relative">
-                            <span className="absolute -left-[21px] top-1 h-2 w-2 rounded-full bg-emerald-600" />
-                            <p className="text-sm text-zinc-700">{describeActivity(activity)}</p>
-                            <p className="text-xs text-zinc-400">{new Date(activity.created_at).toLocaleString()}</p>
-                        </li>
-                    ))}
-                </ol>
-            )}
+        <div className="card">
+            <div className="card-header">
+                <div className="card-title">Activity History</div>
+            </div>
+            <div className="card-body">
+                {activities.length === 0 ? (
+                    <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>No activity yet.</p>
+                ) : (
+                    <div className="timeline">
+                        {activities.map((activity) => (
+                            <div className="timeline-item" key={activity.id}>
+                                <div className="ti-time">{new Date(activity.created_at).toLocaleString()}</div>
+                                <div className="ti-title">{describeActivity(activity)}</div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

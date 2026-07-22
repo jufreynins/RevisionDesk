@@ -63,48 +63,39 @@ function CredentialRow({ websiteId, credential }: { websiteId: number; credentia
     }
 
     return (
-        <div className="rounded-lg border border-zinc-200 p-3">
-            <div className="flex items-center justify-between">
+        <div style={{ border: '1px solid var(--border-color)', borderRadius: 8, padding: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                    <p className="text-sm font-medium text-zinc-900">{credential.label}</p>
+                    <p style={{ fontSize: 13, fontWeight: 500 }}>{credential.label}</p>
                     {credential.login_url && (
-                        <a
-                            href={credential.login_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-emerald-700 hover:underline"
-                        >
+                        <a href={credential.login_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11 }}>
                             {credential.login_url}
                         </a>
                     )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     {credential.can_reveal && (
-                        <button
-                            onClick={toggleReveal}
-                            disabled={loading}
-                            className="inline-flex items-center gap-1 rounded-md border border-zinc-300 px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50"
-                        >
-                            {revealed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                        <button onClick={toggleReveal} disabled={loading} className="btn btn-outline btn-sm">
+                            {revealed ? <EyeOff width={14} height={14} strokeWidth={1.5} /> : <Eye width={14} height={14} strokeWidth={1.5} />}
                             {revealed ? 'Hide' : 'Reveal'}
                         </button>
                     )}
                     {credential.can_manage && (
-                        <button onClick={remove} className="text-zinc-300 hover:text-red-600">
-                            <Trash2 className="h-3.5 w-3.5" />
+                        <button onClick={remove} style={{ color: 'var(--text-muted)' }}>
+                            <Trash2 width={14} height={14} strokeWidth={1.5} />
                         </button>
                     )}
                 </div>
             </div>
 
             {revealed && (
-                <div className="mt-2 space-y-1">
+                <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
                     <RevealedValue label="Username" value={revealed.username} />
                     <RevealedValue label="Password" value={revealed.password} />
                 </div>
             )}
 
-            {credential.notes && <p className="mt-2 text-xs text-zinc-500">{credential.notes}</p>}
+            {credential.notes && <p style={{ marginTop: 8, fontSize: 11, color: 'var(--text-muted)' }}>{credential.notes}</p>}
         </div>
     );
 }
@@ -139,82 +130,63 @@ export default function CredentialsPanel({
     }
 
     return (
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-                <h3 className="flex items-center gap-1.5 text-sm font-semibold text-zinc-900">
-                    <KeyRound className="h-4 w-4" /> Credentials
-                </h3>
+        <div className="card">
+            <div className="card-header">
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <KeyRound width={16} height={16} strokeWidth={1.5} /> Credentials
+                </div>
                 {canCreateCredential && (
-                    <button
-                        onClick={() => setShowForm((v) => !v)}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 hover:underline"
-                    >
-                        <Plus className="h-3.5 w-3.5" /> Add
+                    <button onClick={() => setShowForm((v) => !v)} className="btn btn-outline btn-sm">
+                        <Plus width={14} height={14} strokeWidth={1.5} /> Add
                     </button>
                 )}
             </div>
+            <div className="card-body">
+                {credentials.length === 0 && !showForm && (
+                    <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>No credentials stored for this website.</p>
+                )}
 
-            {credentials.length === 0 && !showForm && (
-                <p className="text-sm text-zinc-500">No credentials stored for this website.</p>
-            )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {credentials.map((credential) => (
+                        <CredentialRow key={credential.id} websiteId={websiteId} credential={credential} />
+                    ))}
+                </div>
 
-            <div className="space-y-2">
-                {credentials.map((credential) => (
-                    <CredentialRow key={credential.id} websiteId={websiteId} credential={credential} />
-                ))}
+                {showForm && (
+                    <form onSubmit={submit} style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        <div className="form-group">
+                            <InputLabel htmlFor="cred-label" value="Label" />
+                            <TextInput id="cred-label" value={data.label} onChange={(e) => setData('label', e.target.value)} required />
+                        </div>
+                        <div className="form-group">
+                            <InputLabel htmlFor="cred-url" value="Login URL" />
+                            <TextInput id="cred-url" value={data.login_url} onChange={(e) => setData('login_url', e.target.value)} />
+                        </div>
+                        <div className="form-group">
+                            <InputLabel htmlFor="cred-username" value="Username" />
+                            <TextInput
+                                id="cred-username"
+                                value={data.username}
+                                onChange={(e) => setData('username', e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <InputLabel htmlFor="cred-password" value="Password" />
+                            <TextInput
+                                id="cred-password"
+                                type="password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                required
+                            />
+                        </div>
+                        <button type="submit" disabled={processing} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                            Save Credential
+                        </button>
+                    </form>
+                )}
             </div>
-
-            {showForm && (
-                <form onSubmit={submit} className="mt-3 space-y-2 rounded-lg bg-zinc-50 p-3">
-                    <div>
-                        <InputLabel htmlFor="cred-label" value="Label" />
-                        <TextInput
-                            id="cred-label"
-                            className="mt-1 block w-full text-sm"
-                            value={data.label}
-                            onChange={(e) => setData('label', e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <InputLabel htmlFor="cred-url" value="Login URL" />
-                        <TextInput
-                            id="cred-url"
-                            className="mt-1 block w-full text-sm"
-                            value={data.login_url}
-                            onChange={(e) => setData('login_url', e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <InputLabel htmlFor="cred-username" value="Username" />
-                        <TextInput
-                            id="cred-username"
-                            className="mt-1 block w-full text-sm"
-                            value={data.username}
-                            onChange={(e) => setData('username', e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <InputLabel htmlFor="cred-password" value="Password" />
-                        <TextInput
-                            id="cred-password"
-                            type="password"
-                            className="mt-1 block w-full text-sm"
-                            value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={processing}
-                        className="w-full rounded-lg bg-emerald-700 py-1.5 text-sm font-semibold text-white hover:bg-emerald-800"
-                    >
-                        Save Credential
-                    </button>
-                </form>
-            )}
         </div>
     );
 }

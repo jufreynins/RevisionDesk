@@ -26,70 +26,59 @@ export default function TimeTrackingPanel({ task }: { task: Task }) {
     }
 
     return (
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-zinc-900">Time Tracking</h3>
-                <button onClick={() => setShowForm((v) => !v)} className="text-xs font-medium text-emerald-700 hover:underline">
+        <div className="card">
+            <div className="card-header">
+                <div className="card-title">Time Tracking</div>
+                <button onClick={() => setShowForm((v) => !v)} className="btn btn-outline btn-sm">
                     {showForm ? 'Cancel' : 'Log time'}
                 </button>
             </div>
-
-            <dl className="mb-3 grid grid-cols-2 gap-2 text-sm">
-                <div>
-                    <dt className="text-xs text-zinc-500">Estimated</dt>
-                    <dd className="font-medium text-zinc-800">
-                        {task.estimated_minutes ? `${task.estimated_minutes} min` : '—'}
-                    </dd>
-                </div>
-                <div>
-                    <dt className="text-xs text-zinc-500">Recorded</dt>
-                    <dd className="font-medium text-zinc-800">{totalMinutes} min</dd>
-                </div>
-            </dl>
-
-            {showForm && (
-                <form onSubmit={submit} className="mb-3 space-y-2 rounded-lg bg-zinc-50 p-3">
-                    <div className="flex gap-2">
-                        <TextInput
-                            type="date"
-                            className="w-full text-sm"
-                            value={data.work_date}
-                            onChange={(e) => setData('work_date', e.target.value)}
-                        />
-                        <TextInput
-                            type="number"
-                            min="1"
-                            className="w-28 text-sm"
-                            value={data.minutes_spent}
-                            onChange={(e) => setData('minutes_spent', Number(e.target.value))}
-                        />
+            <div className="card-body">
+                <dl style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 13, marginBottom: 12 }}>
+                    <div>
+                        <dt style={{ fontSize: 11, color: 'var(--text-muted)' }}>Estimated</dt>
+                        <dd style={{ fontWeight: 500 }}>{task.estimated_minutes ? `${task.estimated_minutes} min` : '—'}</dd>
                     </div>
-                    <TextInput
-                        className="w-full text-sm"
-                        placeholder="What did you work on?"
-                        value={data.work_description}
-                        onChange={(e) => setData('work_description', e.target.value)}
-                    />
-                    <button
-                        type="submit"
-                        disabled={processing}
-                        className="w-full rounded-lg bg-emerald-700 py-1.5 text-sm font-semibold text-white hover:bg-emerald-800"
-                    >
-                        Save Entry
-                    </button>
-                </form>
-            )}
+                    <div>
+                        <dt style={{ fontSize: 11, color: 'var(--text-muted)' }}>Recorded</dt>
+                        <dd style={{ fontWeight: 500 }}>{totalMinutes} min</dd>
+                    </div>
+                </dl>
 
-            <ul className="space-y-1.5">
-                {entries.map((entry) => (
-                    <li key={entry.id} className="flex items-center justify-between text-xs text-zinc-600">
-                        <span>
-                            {entry.user?.name} · {entry.work_date} — {entry.work_description}
-                        </span>
-                        <span className="font-medium text-zinc-800">{entry.minutes_spent}m</span>
-                    </li>
-                ))}
-            </ul>
+                {showForm && (
+                    <form onSubmit={submit} style={{ marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <TextInput type="date" value={data.work_date} onChange={(e) => setData('work_date', e.target.value)} />
+                            <TextInput
+                                type="number"
+                                min="1"
+                                style={{ maxWidth: 100 }}
+                                value={data.minutes_spent}
+                                onChange={(e) => setData('minutes_spent', Number(e.target.value))}
+                            />
+                        </div>
+                        <TextInput
+                            placeholder="What did you work on?"
+                            value={data.work_description}
+                            onChange={(e) => setData('work_description', e.target.value)}
+                        />
+                        <button type="submit" disabled={processing} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                            Save Entry
+                        </button>
+                    </form>
+                )}
+
+                <ul style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {entries.map((entry) => (
+                        <li key={entry.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-secondary)' }}>
+                            <span>
+                                {entry.user?.name} · {entry.work_date} — {entry.work_description}
+                            </span>
+                            <span style={{ fontWeight: 500, color: 'var(--text)' }}>{entry.minutes_spent}m</span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 }

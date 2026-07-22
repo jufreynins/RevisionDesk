@@ -7,17 +7,17 @@ import {
     Bell,
     CheckCircle2,
     Clock,
+    LucideIcon,
     MessageSquare,
     RotateCcw,
     UserPlus,
 } from 'lucide-react';
-import { ComponentType } from 'react';
 
 interface NotificationsIndexProps {
     notifications: Paginated<AppNotification>;
 }
 
-const ICONS: Record<string, ComponentType<{ className?: string }>> = {
+const ICONS: Record<string, LucideIcon> = {
     task_assigned: UserPlus,
     task_reassigned: UserPlus,
     status_changed: Clock,
@@ -44,56 +44,57 @@ export default function Index({ notifications }: PageProps<NotificationsIndexPro
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-zinc-900">Notifications</h2>
-                    <button
-                        onClick={markAllAsRead}
-                        className="text-sm font-medium text-emerald-700 hover:underline"
-                    >
-                        Mark all as read
-                    </button>
-                </div>
+                <>
+                    <div>
+                        <div className="page-pretitle">Workspace</div>
+                        <h1 className="page-title">Notifications</h1>
+                    </div>
+                    <div className="page-actions">
+                        <button onClick={markAllAsRead} className="btn btn-outline btn-sm">
+                            Mark all as read
+                        </button>
+                    </div>
+                </>
             }
         >
             <Head title="Notifications" />
 
-            <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <div className="card">
                 {notifications.data.length === 0 ? (
-                    <div className="py-16 text-center">
-                        <Bell className="mx-auto h-8 w-8 text-zinc-300" />
-                        <p className="mt-2 text-sm text-zinc-500">No notifications yet.</p>
+                    <div style={{ padding: '48px 16px', textAlign: 'center' }}>
+                        <Bell width={32} height={32} strokeWidth={1.5} style={{ margin: '0 auto', color: 'var(--text-muted)' }} />
+                        <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>No notifications yet.</p>
                     </div>
                 ) : (
-                    <ul className="divide-y divide-zinc-100">
+                    <ul className="activity-list">
                         {notifications.data.map((notification) => {
                             const Icon = ICONS[notification.data.type] ?? Bell;
                             const isUnread = !notification.read_at;
 
                             return (
-                                <li key={notification.id}>
-                                    <button
-                                        onClick={() => markAsRead(notification)}
-                                        className={`flex w-full items-start gap-3 px-5 py-4 text-left hover:bg-zinc-50 ${
-                                            isUnread ? 'bg-emerald-50/40' : ''
-                                        }`}
-                                    >
-                                        <span
-                                            className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                                                isUnread ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-500'
-                                            }`}
+                                <li key={notification.id} style={{ background: isUnread ? 'var(--bg-surface-secondary, var(--surface-2))' : undefined }}>
+                                    <button onClick={() => markAsRead(notification)} className="activity-item" style={{ width: '100%', textAlign: 'left' }}>
+                                        <div
+                                            className="activity-avatar"
+                                            style={{
+                                                background: isUnread ? 'var(--primary)' : 'var(--bg-surface-secondary, var(--surface-2))',
+                                                color: isUnread ? '#fff' : 'var(--text-muted)',
+                                            }}
                                         >
-                                            <Icon className="h-4 w-4" />
-                                        </span>
-                                        <span className="flex-1">
-                                            <span className={`block text-sm ${isUnread ? 'font-semibold text-zinc-900' : 'text-zinc-700'}`}>
+                                            <Icon width={16} height={16} strokeWidth={1.5} />
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <div className="activity-body" style={{ fontWeight: isUnread ? 600 : 400 }}>
                                                 {notification.data.message}
-                                            </span>
-                                            <span className="mt-0.5 block text-xs text-zinc-400">
+                                            </div>
+                                            <div className="activity-time">
                                                 {notification.data.actor_name && `${notification.data.actor_name} · `}
                                                 {new Date(notification.created_at).toLocaleString()}
-                                            </span>
-                                        </span>
-                                        {isUnread && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-600" />}
+                                            </div>
+                                        </div>
+                                        {isUnread && (
+                                            <span style={{ height: 8, width: 8, flexShrink: 0, borderRadius: '50%', background: 'var(--primary)' }} />
+                                        )}
                                     </button>
                                 </li>
                             );
@@ -103,16 +104,12 @@ export default function Index({ notifications }: PageProps<NotificationsIndexPro
             </div>
 
             {notifications.last_page > 1 && (
-                <div className="mt-6 flex flex-wrap gap-2">
+                <div className="pagination">
                     {notifications.links.map((link, index) => (
                         <Link
                             key={index}
                             href={link.url ?? '#'}
-                            className={`rounded-md px-3 py-1.5 text-sm ${
-                                link.active
-                                    ? 'bg-emerald-700 text-white'
-                                    : 'border border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-50'
-                            } ${!link.url ? 'pointer-events-none opacity-50' : ''}`}
+                            className={`page-link ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`}
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />
                     ))}

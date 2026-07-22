@@ -13,25 +13,36 @@ export default function AttachmentsPanel({ task }: { task: Task }) {
     if (attachments.length === 0) return null;
 
     return (
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-sm font-semibold text-zinc-900">Attachments</h3>
-            <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <div className="card">
+            <div className="card-header">
+                <div className="card-title">Attachments</div>
+            </div>
+            <div className="card-body" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8 }}>
                 {attachments.map((att) => (
                     <a
                         key={att.id}
                         href={route('tasks.attachments.download', [task.id, att.id])}
-                        className="flex items-center gap-2 rounded-lg border border-zinc-200 p-2 text-xs text-zinc-600 hover:bg-zinc-50"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            borderRadius: 8,
+                            border: '1px solid var(--border-color)',
+                            padding: 8,
+                            fontSize: 12,
+                            color: 'var(--text-secondary)',
+                        }}
                     >
                         {att.is_image ? (
-                            <ImageIcon className="h-4 w-4 shrink-0 text-zinc-400" />
+                            <ImageIcon width={16} height={16} strokeWidth={1.5} style={{ flexShrink: 0, color: 'var(--text-muted)' }} />
                         ) : (
-                            <FileText className="h-4 w-4 shrink-0 text-zinc-400" />
+                            <FileText width={16} height={16} strokeWidth={1.5} style={{ flexShrink: 0, color: 'var(--text-muted)' }} />
                         )}
-                        <span className="truncate">{att.original_name}</span>
-                        <span className="ml-auto shrink-0 text-zinc-400">{formatBytes(att.size_bytes)}</span>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.original_name}</span>
+                        <span style={{ marginLeft: 'auto', flexShrink: 0, color: 'var(--text-muted)' }}>{formatBytes(att.size_bytes)}</span>
                     </a>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 }

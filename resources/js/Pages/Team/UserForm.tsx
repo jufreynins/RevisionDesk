@@ -42,115 +42,90 @@ export default function UserForm({ member, submitUrl, method, submitLabel }: Use
     }
 
     return (
-        <form onSubmit={submit} className="space-y-6 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                    <InputLabel htmlFor="name" value="Full Name" />
-                    <TextInput
-                        id="name"
-                        className="mt-1 block w-full"
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                    />
-                    <InputError message={errors.name} className="mt-1" />
-                </div>
-
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
-                    <TextInput
-                        id="email"
-                        type="email"
-                        className="mt-1 block w-full"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                    />
-                    <InputError message={errors.email} className="mt-1" />
-                </div>
-
-                <div>
-                    <InputLabel htmlFor="role" value="Role" />
-                    <select
-                        id="role"
-                        className="mt-1 block w-full rounded-md border-zinc-300 text-sm focus:border-emerald-600 focus:ring-emerald-600"
-                        value={data.role}
-                        onChange={(e) => setData('role', e.target.value as User['role'])}
-                    >
-                        {ROLES.map((r) => (
-                            <option key={r.value} value={r.value}>
-                                {r.label}
-                            </option>
-                        ))}
-                    </select>
-                    <InputError message={errors.role} className="mt-1" />
-                </div>
-
-                <div>
-                    <InputLabel htmlFor="phone" value="Phone" />
-                    <TextInput
-                        id="phone"
-                        className="mt-1 block w-full"
-                        value={data.phone}
-                        onChange={(e) => setData('phone', e.target.value)}
-                    />
-                    <InputError message={errors.phone} className="mt-1" />
-                </div>
-
-                {!member && (
-                    <>
-                        <div>
-                            <InputLabel htmlFor="password" value="Password" />
-                            <TextInput
-                                id="password"
-                                type="password"
-                                className="mt-1 block w-full"
-                                value={data.password}
-                                onChange={(e) => setData('password', e.target.value)}
-                                required
-                            />
-                            <InputError message={errors.password} className="mt-1" />
+        <div className="card">
+            <div className="card-body">
+                <form onSubmit={submit}>
+                    <div className="form-row">
+                        <div className="form-group">
+                            <InputLabel htmlFor="name" value="Full Name" />
+                            <TextInput id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} required />
+                            <InputError message={errors.name} className="mt-1" />
                         </div>
 
-                        <div>
-                            <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
-                            <TextInput
-                                id="password_confirmation"
-                                type="password"
-                                className="mt-1 block w-full"
-                                value={data.password_confirmation}
-                                onChange={(e) => setData('password_confirmation', e.target.value)}
-                                required
-                            />
+                        <div className="form-group">
+                            <InputLabel htmlFor="email" value="Email" />
+                            <TextInput id="email" type="email" value={data.email} onChange={(e) => setData('email', e.target.value)} required />
+                            <InputError message={errors.email} className="mt-1" />
                         </div>
-                    </>
-                )}
-            </div>
+                    </div>
 
-            <div className="space-y-3 border-t border-zinc-100 pt-4">
-                <label className="flex items-center gap-2 text-sm text-zinc-700">
-                    <input
-                        type="checkbox"
-                        checked={data.is_active}
-                        onChange={(e) => setData('is_active', e.target.checked)}
-                        className="rounded border-zinc-300 text-emerald-700 focus:ring-emerald-600"
-                    />
-                    Active (can log in)
-                </label>
-                <label className="flex items-center gap-2 text-sm text-zinc-700">
-                    <input
-                        type="checkbox"
-                        checked={data.can_view_credentials}
-                        onChange={(e) => setData('can_view_credentials', e.target.checked)}
-                        className="rounded border-zinc-300 text-emerald-700 focus:ring-emerald-600"
-                    />
-                    Permitted to view website credentials (developers only)
-                </label>
-            </div>
+                    <div className="form-row">
+                        <div className="form-group">
+                            <InputLabel htmlFor="role" value="Role" />
+                            <select id="role" className="form-control" value={data.role} onChange={(e) => setData('role', e.target.value as User['role'])}>
+                                {ROLES.map((r) => (
+                                    <option key={r.value} value={r.value}>
+                                        {r.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <InputError message={errors.role} className="mt-1" />
+                        </div>
 
-            <div className="flex justify-end">
-                <PrimaryButton disabled={processing}>{submitLabel}</PrimaryButton>
+                        <div className="form-group">
+                            <InputLabel htmlFor="phone" value="Phone" />
+                            <TextInput id="phone" value={data.phone} onChange={(e) => setData('phone', e.target.value)} />
+                            <InputError message={errors.phone} className="mt-1" />
+                        </div>
+                    </div>
+
+                    {!member && (
+                        <div className="form-row">
+                            <div className="form-group">
+                                <InputLabel htmlFor="password" value="Password" />
+                                <TextInput
+                                    id="password"
+                                    type="password"
+                                    value={data.password}
+                                    onChange={(e) => setData('password', e.target.value)}
+                                    required
+                                />
+                                <InputError message={errors.password} className="mt-1" />
+                            </div>
+
+                            <div className="form-group">
+                                <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
+                                <TextInput
+                                    id="password_confirmation"
+                                    type="password"
+                                    value={data.password_confirmation}
+                                    onChange={(e) => setData('password_confirmation', e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, borderTop: '1px solid var(--border-color)', paddingTop: 16, marginTop: 4 }}>
+                        <label className="form-check" style={{ margin: 0 }}>
+                            <input type="checkbox" checked={data.is_active} onChange={(e) => setData('is_active', e.target.checked)} />
+                            Active (can log in)
+                        </label>
+                        <label className="form-check" style={{ margin: 0 }}>
+                            <input
+                                type="checkbox"
+                                checked={data.can_view_credentials}
+                                onChange={(e) => setData('can_view_credentials', e.target.checked)}
+                            />
+                            Permitted to view website credentials (developers only)
+                        </label>
+                    </div>
+
+                    <div className="form-actions right">
+                        <PrimaryButton disabled={processing}>{submitLabel}</PrimaryButton>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     );
 }

@@ -12,11 +12,16 @@ interface CreateProps {
 export default function Create({ projectManagers, teamMembers }: PageProps<CreateProps>) {
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold text-zinc-900">Add Website</h2>}
+            header={
+                <div>
+                    <div className="page-pretitle">Client Work</div>
+                    <h1 className="page-title">Add Website</h1>
+                </div>
+            }
         >
             <Head title="Add Website" />
 
-            <div className="mx-auto max-w-3xl">
+            <div style={{ maxWidth: 760 }}>
                 <WebsiteForm
                     projectManagers={projectManagers}
                     teamMembers={teamMembers}

@@ -41,45 +41,43 @@ export default function Index({ activities, websites, filters }: PageProps<Activ
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-zinc-900">Activity Log</h2>
-                    <select
-                        value={filters.website_id ?? ''}
-                        onChange={(e) => filterByWebsite(e.target.value)}
-                        className="rounded-lg border-zinc-300 py-1.5 text-sm focus:border-emerald-600 focus:ring-emerald-600"
-                    >
-                        <option value="">All websites</option>
-                        {websites.map((w) => (
-                            <option key={w.id} value={w.id}>
-                                {w.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <>
+                    <div>
+                        <div className="page-pretitle">Client Work</div>
+                        <h1 className="page-title">Activity Log</h1>
+                    </div>
+                    <div className="page-actions">
+                        <select value={filters.website_id ?? ''} onChange={(e) => filterByWebsite(e.target.value)} className="form-control">
+                            <option value="">All websites</option>
+                            {websites.map((w) => (
+                                <option key={w.id} value={w.id}>
+                                    {w.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </>
             }
         >
             <Head title="Activity Log" />
 
-            <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <div className="card">
                 {activities.data.length === 0 ? (
-                    <div className="py-16 text-center">
-                        <Activity className="mx-auto h-8 w-8 text-zinc-300" />
-                        <p className="mt-2 text-sm text-zinc-500">No activity yet.</p>
+                    <div style={{ padding: '48px 16px', textAlign: 'center' }}>
+                        <Activity width={32} height={32} strokeWidth={1.5} style={{ margin: '0 auto', color: 'var(--text-muted)' }} />
+                        <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>No activity yet.</p>
                     </div>
                 ) : (
-                    <ul className="divide-y divide-zinc-100">
+                    <ul className="activity-list">
                         {activities.data.map((activity) => (
-                            <li key={activity.id} className="flex items-start justify-between gap-3 px-5 py-4">
+                            <li className="activity-item" key={activity.id} style={{ justifyContent: 'space-between' }}>
                                 <div>
-                                    <Link
-                                        href={route('tasks.show', activity.task_id)}
-                                        className="text-sm font-medium text-zinc-900 hover:underline"
-                                    >
+                                    <Link href={route('tasks.show', activity.task_id)} className="activity-body" style={{ fontWeight: 600 }}>
                                         {activity.task?.ticket_number} · {activity.task?.title}
                                     </Link>
-                                    <p className="text-sm text-zinc-600">{describeActivity(activity)}</p>
+                                    <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{describeActivity(activity)}</p>
                                 </div>
-                                <span className="shrink-0 text-xs text-zinc-400">
+                                <span style={{ flexShrink: 0, fontSize: 11, color: 'var(--text-muted)' }}>
                                     {new Date(activity.created_at).toLocaleString()}
                                 </span>
                             </li>
@@ -89,16 +87,12 @@ export default function Index({ activities, websites, filters }: PageProps<Activ
             </div>
 
             {activities.last_page > 1 && (
-                <div className="mt-6 flex flex-wrap gap-2">
+                <div className="pagination">
                     {activities.links.map((link, index) => (
                         <Link
                             key={index}
                             href={link.url ?? '#'}
-                            className={`rounded-md px-3 py-1.5 text-sm ${
-                                link.active
-                                    ? 'bg-emerald-700 text-white'
-                                    : 'border border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-50'
-                            } ${!link.url ? 'pointer-events-none opacity-50' : ''}`}
+                            className={`page-link ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}`}
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />
                     ))}

@@ -13,11 +13,16 @@ interface EditProps {
 export default function Edit({ website, projectManagers, teamMembers }: PageProps<EditProps>) {
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold text-zinc-900">Edit {website.name}</h2>}
+            header={
+                <div>
+                    <div className="page-pretitle">Client Work</div>
+                    <h1 className="page-title">Edit {website.name}</h1>
+                </div>
+            }
         >
             <Head title={`Edit ${website.name}`} />
 
-            <div className="mx-auto max-w-3xl">
+            <div style={{ maxWidth: 760 }}>
                 <WebsiteForm
                     website={website}
                     projectManagers={projectManagers}

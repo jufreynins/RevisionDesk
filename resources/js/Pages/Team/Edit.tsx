@@ -10,16 +10,18 @@ interface EditProps {
 
 export default function Edit({ member }: PageProps<EditProps>) {
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold text-zinc-900">Edit {member.name}</h2>}>
+        <AuthenticatedLayout
+            header={
+                <div>
+                    <div className="page-pretitle">Admin</div>
+                    <h1 className="page-title">Edit {member.name}</h1>
+                </div>
+            }
+        >
             <Head title={`Edit ${member.name}`} />
 
-            <div className="mx-auto max-w-2xl">
-                <UserForm
-                    member={member}
-                    submitUrl={route('team.update', member.id)}
-                    method="put"
-                    submitLabel="Save Changes"
-                />
+            <div style={{ maxWidth: 640 }}>
+                <UserForm member={member} submitUrl={route('team.update', member.id)} method="put" submitLabel="Save Changes" />
             </div>
         </AuthenticatedLayout>
     );

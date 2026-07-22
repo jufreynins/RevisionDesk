@@ -1,4 +1,3 @@
-import StatCard from '@/Components/StatCard';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -46,9 +45,31 @@ function toChartData(record: Record<string, number>) {
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
     return (
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900">{title}</h3>
-            <div className="h-64 w-full">{children}</div>
+        <div className="card">
+            <div className="card-header">
+                <div className="card-title">{title}</div>
+            </div>
+            <div className="card-body" style={{ height: 256, width: '100%' }}>
+                {children}
+            </div>
+        </div>
+    );
+}
+
+function StatTile({ label, value, icon: Icon, color }: { label: string; value: string | number; icon: typeof Clock; color: string }) {
+    return (
+        <div className="card">
+            <div className="stat">
+                <div className={`stat-icon ${color}`}>
+                    <Icon width={22} height={22} strokeWidth={1.5} />
+                </div>
+                <div className="stat-content">
+                    <div className="stat-label">{label}</div>
+                    <div className="stat-value-row">
+                        <span className="stat-value">{value}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
@@ -83,43 +104,37 @@ export default function Index({
     ];
 
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold text-zinc-900">Reports</h2>}>
+        <AuthenticatedLayout
+            header={
+                <div>
+                    <div className="page-pretitle">Admin</div>
+                    <h1 className="page-title">Reports</h1>
+                </div>
+            }
+        >
             <Head title="Reports" />
 
-            <form onSubmit={applyRange} className="mb-6 flex flex-wrap items-end gap-3">
-                <div>
-                    <label className="block text-xs font-medium text-zinc-500">From</label>
-                    <input
-                        type="date"
-                        value={from}
-                        onChange={(e) => setFrom(e.target.value)}
-                        className="mt-1 rounded-lg border-zinc-300 py-1.5 text-sm focus:border-emerald-600 focus:ring-emerald-600"
-                    />
+            <form onSubmit={applyRange} style={{ marginBottom: 20, display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: 12 }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label">From</label>
+                    <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="form-control" />
                 </div>
-                <div>
-                    <label className="block text-xs font-medium text-zinc-500">To</label>
-                    <input
-                        type="date"
-                        value={to}
-                        onChange={(e) => setTo(e.target.value)}
-                        className="mt-1 rounded-lg border-zinc-300 py-1.5 text-sm focus:border-emerald-600 focus:ring-emerald-600"
-                    />
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label">To</label>
+                    <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="form-control" />
                 </div>
-                <button
-                    type="submit"
-                    className="rounded-lg bg-emerald-700 px-4 py-1.5 text-sm font-semibold text-white hover:bg-emerald-800"
-                >
+                <button type="submit" className="btn btn-primary">
                     Apply
                 </button>
             </form>
 
-            <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <StatCard label="Completed in Range" value={totalCompletedInRange} icon={CheckCircle2} tone="success" />
-                <StatCard label="Avg Completion Time" value={`${avgCompletionHours}h`} icon={Clock} tone="default" />
-                <StatCard label="Currently Overdue" value={overdueCount} icon={ListChecks} tone="warning" />
+            <div className="row col-3">
+                <StatTile label="Completed in Range" value={totalCompletedInRange} icon={CheckCircle2} color="green" />
+                <StatTile label="Avg Completion Time" value={`${avgCompletionHours}h`} icon={Clock} color="blue" />
+                <StatTile label="Currently Overdue" value={overdueCount} icon={ListChecks} color="yellow" />
             </div>
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="row col-2">
                 <ChartCard title="Tasks Completed Over Time">
                     <ResponsiveContainer>
                         <LineChart data={tasksCompletedByDate}>

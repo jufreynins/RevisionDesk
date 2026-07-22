@@ -32,95 +32,117 @@ export default function CommentsPanel({
     }
 
     return (
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-900">Comments</h3>
-
-            <div className="space-y-4">
-                {comments.length === 0 && <p className="text-sm text-zinc-500">No comments yet.</p>}
-
-                {comments.map((comment) => (
-                    <div
-                        key={comment.id}
-                        className={`rounded-lg border p-3 ${
-                            comment.is_internal ? 'border-amber-200 bg-amber-50/50' : 'border-zinc-200 bg-zinc-50'
-                        }`}
-                    >
-                        <div className="mb-1.5 flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-sm">
-                                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-700">
-                                    {comment.user?.name.charAt(0)}
-                                </span>
-                                <span className="font-medium text-zinc-900">{comment.user?.name}</span>
-                                <span className="text-xs capitalize text-zinc-400">
-                                    {comment.user?.role.replace('_', ' ')}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs text-zinc-400">
-                                {comment.is_internal && (
-                                    <span className="inline-flex items-center gap-1 text-amber-700">
-                                        <Lock className="h-3 w-3" /> Internal
-                                    </span>
-                                )}
-                                {new Date(comment.created_at).toLocaleString()}
-                            </div>
-                        </div>
-                        <HtmlContent html={comment.body} />
-
-                        {comment.attachments && comment.attachments.length > 0 && (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                                {comment.attachments.map((att) => (
-                                    <a
-                                        key={att.id}
-                                        href={route('tasks.attachments.download', [task.id, att.id])}
-                                        className="inline-flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50"
-                                    >
-                                        <Paperclip className="h-3 w-3" /> {att.original_name}
-                                    </a>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                ))}
+        <div className="card">
+            <div className="card-header">
+                <div className="card-title">Comments</div>
             </div>
+            <div className="card-body">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {comments.length === 0 && <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>No comments yet.</p>}
 
-            <form onSubmit={submit} className="mt-5">
-                <RichTextEditor value={data.body} onChange={(html) => setData('body', html)} placeholder="Write a comment..." />
+                    {comments.map((comment) => (
+                        <div
+                            key={comment.id}
+                            style={{
+                                borderRadius: 8,
+                                border: `1px solid ${comment.is_internal ? 'var(--yellow)' : 'var(--border-color)'}`,
+                                padding: 12,
+                            }}
+                        >
+                            <div style={{ marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                                    <span
+                                        style={{
+                                            display: 'flex',
+                                            height: 24,
+                                            width: 24,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            borderRadius: '50%',
+                                            background: 'var(--primary)',
+                                            color: '#fff',
+                                            fontSize: 11,
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        {comment.user?.name.charAt(0)}
+                                    </span>
+                                    <strong>{comment.user?.name}</strong>
+                                    <span style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'capitalize' }}>
+                                        {comment.user?.role.replace('_', ' ')}
+                                    </span>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'var(--text-muted)' }}>
+                                    {comment.is_internal && (
+                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--yellow)' }}>
+                                            <Lock width={12} height={12} strokeWidth={1.5} /> Internal
+                                        </span>
+                                    )}
+                                    {new Date(comment.created_at).toLocaleString()}
+                                </div>
+                            </div>
+                            <HtmlContent html={comment.body} />
 
-                <div className="mt-2 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-700">
-                            <Paperclip className="h-3.5 w-3.5" />
-                            {data.attachments.length > 0 ? `${data.attachments.length} file(s)` : 'Attach files'}
-                            <input
-                                type="file"
-                                multiple
-                                className="hidden"
-                                onChange={(e) => setData('attachments', Array.from(e.target.files ?? []))}
-                            />
-                        </label>
-
-                        {canAddInternalComment && (
-                            <label className="flex items-center gap-1.5 text-xs text-zinc-500">
-                                <input
-                                    type="checkbox"
-                                    checked={data.is_internal}
-                                    onChange={(e) => setData('is_internal', e.target.checked)}
-                                    className="h-3.5 w-3.5 rounded border-zinc-300 text-amber-600 focus:ring-amber-500"
-                                />
-                                Internal note (staff only)
-                            </label>
-                        )}
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={processing}
-                        className="rounded-lg bg-emerald-700 px-4 py-1.5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
-                    >
-                        Post Comment
-                    </button>
+                            {comment.attachments && comment.attachments.length > 0 && (
+                                <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                    {comment.attachments.map((att) => (
+                                        <a
+                                            key={att.id}
+                                            href={route('tasks.attachments.download', [task.id, att.id])}
+                                            style={{
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: 4,
+                                                borderRadius: 6,
+                                                border: '1px solid var(--border-color)',
+                                                padding: '4px 8px',
+                                                fontSize: 11,
+                                                color: 'var(--text-secondary)',
+                                            }}
+                                        >
+                                            <Paperclip width={12} height={12} strokeWidth={1.5} /> {att.original_name}
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
-            </form>
+
+                <form onSubmit={submit} style={{ marginTop: 18 }}>
+                    <RichTextEditor value={data.body} onChange={(html) => setData('body', html)} placeholder="Write a comment..." />
+
+                    <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                            <label style={{ display: 'flex', cursor: 'pointer', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-muted)' }}>
+                                <Paperclip width={14} height={14} strokeWidth={1.5} />
+                                {data.attachments.length > 0 ? `${data.attachments.length} file(s)` : 'Attach files'}
+                                <input
+                                    type="file"
+                                    multiple
+                                    className="hidden"
+                                    onChange={(e) => setData('attachments', Array.from(e.target.files ?? []))}
+                                />
+                            </label>
+
+                            {canAddInternalComment && (
+                                <label className="form-check" style={{ margin: 0, fontSize: 12 }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={data.is_internal}
+                                        onChange={(e) => setData('is_internal', e.target.checked)}
+                                    />
+                                    Internal note (staff only)
+                                </label>
+                            )}
+                        </div>
+
+                        <button type="submit" disabled={processing} className="btn btn-primary btn-sm">
+                            Post Comment
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }

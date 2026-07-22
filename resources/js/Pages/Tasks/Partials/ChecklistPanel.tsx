@@ -1,7 +1,7 @@
 import TextInput from '@/Components/TextInput';
 import { Task } from '@/types/models';
 import { router } from '@inertiajs/react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Check, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ChecklistPanel({ task, canEdit }: { task: Task; canEdit: boolean }) {
@@ -31,60 +31,56 @@ export default function ChecklistPanel({ task, canEdit }: { task: Task; canEdit:
     }
 
     return (
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-zinc-900">Checklist</h3>
+        <div className="card">
+            <div className="card-header">
+                <div className="card-title">Checklist</div>
                 {items.length > 0 && (
-                    <span className="text-xs text-zinc-500">
+                    <div className="card-subtitle">
                         {completed} of {items.length} completed
-                    </span>
+                    </div>
                 )}
             </div>
-
-            <ul className="space-y-2">
+            <div className="card-body" style={{ padding: '8px 16px' }}>
                 {items.map((item) => (
-                    <li key={item.id} className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            checked={item.is_completed}
+                    <div className="todo-row" key={item.id} style={{ opacity: canEdit ? 1 : 0.7 }}>
+                        <button
+                            type="button"
+                            className={`todo-cb ${item.is_completed ? 'done' : ''}`}
                             disabled={!canEdit}
-                            onChange={(e) => toggleItem(item.id, e.target.checked)}
-                            className="h-4 w-4 rounded border-zinc-300 text-emerald-700 focus:ring-emerald-600"
-                        />
-                        <span className={`flex-1 text-sm ${item.is_completed ? 'text-zinc-400 line-through' : 'text-zinc-700'}`}>
+                            onClick={() => toggleItem(item.id, !item.is_completed)}
+                        >
+                            {item.is_completed && <Check width={10} height={10} strokeWidth={3} />}
+                        </button>
+                        <span className="todo-text" style={item.is_completed ? { textDecoration: 'line-through', color: 'var(--text-muted)' } : undefined}>
                             {item.item_text}
                         </span>
                         {canEdit && (
-                            <button onClick={() => removeItem(item.id)} className="text-zinc-300 hover:text-red-600">
-                                <Trash2 className="h-3.5 w-3.5" />
+                            <button onClick={() => removeItem(item.id)} style={{ color: 'var(--text-muted)' }}>
+                                <Trash2 width={14} height={14} strokeWidth={1.5} />
                             </button>
                         )}
-                    </li>
+                    </div>
                 ))}
-            </ul>
 
-            {canEdit && (
-                <div className="mt-3 flex gap-2">
-                    <TextInput
-                        className="block w-full text-sm"
-                        value={newItem}
-                        onChange={(e) => setNewItem(e.target.value)}
-                        placeholder="Add checklist item..."
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                addItem();
-                            }
-                        }}
-                    />
-                    <button
-                        onClick={addItem}
-                        className="inline-flex items-center rounded-lg border border-zinc-300 px-3 text-zinc-600 hover:bg-zinc-50"
-                    >
-                        <Plus className="h-4 w-4" />
-                    </button>
-                </div>
-            )}
+                {canEdit && (
+                    <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
+                        <TextInput
+                            value={newItem}
+                            onChange={(e) => setNewItem(e.target.value)}
+                            placeholder="Add checklist item..."
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    addItem();
+                                }
+                            }}
+                        />
+                        <button onClick={addItem} className="btn btn-outline">
+                            <Plus width={16} height={16} strokeWidth={1.5} />
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

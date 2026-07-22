@@ -14,11 +14,16 @@ interface EditProps {
 export default function Edit({ task, websites, users, tags }: PageProps<EditProps>) {
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold text-zinc-900">Edit {task.ticket_number}</h2>}
+            header={
+                <div>
+                    <div className="page-pretitle">Workspace</div>
+                    <h1 className="page-title">Edit {task.ticket_number}</h1>
+                </div>
+            }
         >
             <Head title={`Edit ${task.ticket_number}`} />
 
-            <div className="mx-auto max-w-4xl">
+            <div style={{ maxWidth: 900 }}>
                 <TaskForm
                     mode="edit"
                     task={task}

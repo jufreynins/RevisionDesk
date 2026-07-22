@@ -45,76 +45,104 @@ export default function Calendar({ tasks }: PageProps<CalendarProps>) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-zinc-900">Calendar</h2>
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setCursor(new Date(year, month - 1, 1))}
-                            className="rounded-lg border border-zinc-300 p-1.5 hover:bg-zinc-50"
-                        >
-                            <ChevronLeft className="h-4 w-4" />
+                <>
+                    <div>
+                        <div className="page-pretitle">Workspace</div>
+                        <h1 className="page-title">Calendar</h1>
+                    </div>
+                    <div className="page-actions" style={{ alignItems: 'center' }}>
+                        <button onClick={() => setCursor(new Date(year, month - 1, 1))} className="btn btn-outline btn-sm">
+                            <ChevronLeft width={16} height={16} strokeWidth={1.5} />
                         </button>
-                        <span className="text-sm font-medium text-zinc-700">
+                        <span style={{ fontSize: 13, fontWeight: 500 }}>
                             {cursor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
                         </span>
-                        <button
-                            onClick={() => setCursor(new Date(year, month + 1, 1))}
-                            className="rounded-lg border border-zinc-300 p-1.5 hover:bg-zinc-50"
-                        >
-                            <ChevronRight className="h-4 w-4" />
+                        <button onClick={() => setCursor(new Date(year, month + 1, 1))} className="btn btn-outline btn-sm">
+                            <ChevronRight width={16} height={16} strokeWidth={1.5} />
                         </button>
                     </div>
-                </div>
+                </>
             }
         >
             <Head title="Calendar" />
 
-            <div className="grid grid-cols-7 gap-px overflow-hidden rounded-xl border border-zinc-200 bg-zinc-200 text-xs">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                    <div key={day} className="bg-zinc-50 px-2 py-1.5 text-center font-medium text-zinc-500">
-                        {day}
-                    </div>
-                ))}
-
-                {cells.map((date, index) => {
-                    if (!date) return <div key={index} className="min-h-28 bg-white" />;
-
-                    const key = toDateKey(date);
-                    const dayTasks = tasksByDate.get(key) ?? [];
-                    const isToday = key === todayKey;
-
-                    return (
-                        <div key={index} className="min-h-28 bg-white p-1.5">
-                            <span
-                                className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-xs ${
-                                    isToday ? 'bg-emerald-700 font-semibold text-white' : 'text-zinc-500'
-                                }`}
-                            >
-                                {date.getDate()}
-                            </span>
-                            <div className="mt-1 space-y-1">
-                                {dayTasks.slice(0, 3).map((task) => (
-                                    <Link
-                                        key={task.id}
-                                        href={route('tasks.show', task.id)}
-                                        className="block truncate rounded bg-zinc-50 px-1.5 py-0.5 text-[11px] text-zinc-700 hover:bg-zinc-100"
-                                        title={task.title}
-                                    >
-                                        {task.ticket_number}
-                                    </Link>
-                                ))}
-                                {dayTasks.length > 3 && (
-                                    <span className="block px-1.5 text-[11px] text-zinc-400">
-                                        +{dayTasks.length - 3} more
-                                    </span>
-                                )}
-                            </div>
+            <div className="card">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: 'var(--border-color)' }}>
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                        <div
+                            key={day}
+                            style={{
+                                background: 'var(--bg-surface-secondary, var(--surface-2))',
+                                padding: '6px 8px',
+                                textAlign: 'center',
+                                fontSize: 11,
+                                fontWeight: 500,
+                                color: 'var(--text-muted)',
+                            }}
+                        >
+                            {day}
                         </div>
-                    );
-                })}
+                    ))}
+
+                    {cells.map((date, index) => {
+                        if (!date) return <div key={index} style={{ minHeight: 112, background: 'var(--card-bg, #fff)' }} />;
+
+                        const key = toDateKey(date);
+                        const dayTasks = tasksByDate.get(key) ?? [];
+                        const isToday = key === todayKey;
+
+                        return (
+                            <div key={index} style={{ minHeight: 112, background: 'var(--card-bg, #fff)', padding: 6 }}>
+                                <span
+                                    style={{
+                                        display: 'inline-flex',
+                                        height: 20,
+                                        width: 20,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRadius: '50%',
+                                        fontSize: 11,
+                                        background: isToday ? 'var(--primary)' : 'transparent',
+                                        color: isToday ? '#fff' : 'var(--text-muted)',
+                                        fontWeight: isToday ? 600 : 400,
+                                    }}
+                                >
+                                    {date.getDate()}
+                                </span>
+                                <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    {dayTasks.slice(0, 3).map((task) => (
+                                        <Link
+                                            key={task.id}
+                                            href={route('tasks.show', task.id)}
+                                            title={task.title}
+                                            style={{
+                                                display: 'block',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                                borderRadius: 4,
+                                                background: 'var(--bg-surface-secondary, var(--surface-2))',
+                                                padding: '2px 6px',
+                                                fontSize: 11,
+                                                color: 'var(--text-secondary)',
+                                            }}
+                                        >
+                                            {task.ticket_number}
+                                        </Link>
+                                    ))}
+                                    {dayTasks.length > 3 && (
+                                        <span style={{ padding: '0 6px', fontSize: 11, color: 'var(--text-muted)' }}>
+                                            +{dayTasks.length - 3} more
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-3 text-xs text-zinc-500">
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: 'var(--text-muted)' }}>
                 <PriorityBadge priority="urgent" /> and <PriorityBadge priority="critical" /> tasks need attention first.
             </div>
         </AuthenticatedLayout>
