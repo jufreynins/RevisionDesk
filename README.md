@@ -9,7 +9,7 @@ An internal website task and revision ticket management system for a web develop
 - **Styling:** Tailwind CSS 3, `@tailwindcss/forms`, `@tailwindcss/typography`
 - **Rich text:** TipTap (headings, lists, links, tables, code blocks)
 - **Icons:** Lucide
-- **Charts:** Recharts (Reports, Phase 4)
+- **Charts:** Recharts (Reports)
 - **Auth:** Laravel Breeze (react-ts stack) — session-based, no public registration
 - **Authorization:** Laravel Policies (`app/Policies`) + route middleware, enforced server-side only
 
@@ -74,7 +74,18 @@ All seeded accounts use the password **`password`**. These are placeholder crede
 | Client | `client1@revisiondesk.test` |
 | Client | `client2@revisiondesk.test` |
 
-Seeded data also includes 5 demo websites and 30 demo tasks with comments, checklists, time entries, attachment metadata, and activity history.
+Seeded data also includes 5 demo websites (each with a placeholder credential) and 30 demo tasks with comments, checklists, time entries, attachment metadata, and activity history.
+
+## Modules
+
+Beyond core task/website management, the app includes:
+
+- **Notifications** — in-app (bell icon + `/notifications`), optional email, gated by the `email_notifications_enabled` setting. Fires on assignment, reassignment, status changes, comments, review/approval/revision events. Never notifies the acting user or leaks internal-comment notifications to clients. A scheduled command (`app:send-task-due-date-notifications`, daily 08:00 — requires `php artisan schedule:work` or a cron entry) notifies assignees of tasks due tomorrow or newly overdue.
+- **Activity Log** (`/activity-log`) — global feed of task activity, scoped server-side to what the viewer's role can see. Admin/PM only.
+- **Team** (`/team`) — admin-only user management (create/edit/deactivate). Project managers can view the roster but not manage it.
+- **Website Credentials** — stored encrypted, revealed only via a JSON endpoint (never through Inertia's page history) that logs every view to `credential_views`. Gated per-credential by `WebsiteCredentialPolicy`.
+- **Settings** (`/settings`, admin-only) — company name/logo, task defaults, ticket prefix, file size limit, timezone/date format, email notification toggle.
+- **Reports** (`/reports`, admin/PM only) — date-range filtered: tasks completed over time, open tasks per website, tasks by priority/type, overdue count, average completion time, tasks completed per team member, estimated vs. actual time.
 
 ## Development
 

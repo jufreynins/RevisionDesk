@@ -44,6 +44,15 @@ class TaskSeeder extends Seeder
                 $isOverdue = $taskIndex % 7 === 0 && ! in_array($status, ['completed', 'cancelled'], true);
                 $isCompletedThisWeek = $status === 'completed' && $taskIndex % 3 === 0;
 
+                $createdAt = now()->subDays(fake()->numberBetween(5, 45));
+                $completedAt = null;
+
+                if ($status === 'completed') {
+                    $completedAt = $isCompletedThisWeek
+                        ? now()->subDays(fake()->numberBetween(0, 4))
+                        : $createdAt->copy()->addDays(fake()->numberBetween(1, 10));
+                }
+
                 /** @var Task $task */
                 $task = Task::factory()->create([
                     'website_id' => $website->id,
@@ -54,9 +63,11 @@ class TaskSeeder extends Seeder
                     'due_date' => $isOverdue
                         ? now()->subDays(fake()->numberBetween(1, 10))
                         : now()->addDays(fake()->numberBetween(1, 21)),
-                    'completed_at' => $isCompletedThisWeek ? now()->subDays(fake()->numberBetween(0, 4)) : null,
+                    'completed_at' => $completedAt,
                     'internal_notes' => fake()->optional()->sentence(10),
                     'client_notes' => fake()->optional()->sentence(8),
+                    'created_at' => $createdAt,
+                    'updated_at' => $completedAt ?? $createdAt,
                 ]);
 
                 $task->tags()->attach($tags->random(fake()->numberBetween(0, 2))->pluck('id'));

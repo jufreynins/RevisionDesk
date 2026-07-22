@@ -1,20 +1,41 @@
 import { PriorityBadge, StatusBadge } from '@/Components/Badges';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import CredentialsPanel from '@/Pages/Websites/Partials/CredentialsPanel';
 import { PageProps } from '@/types';
 import { Task, TaskActivity, Website } from '@/types/models';
 import { Head, Link, router } from '@inertiajs/react';
 import { ExternalLink, Pencil, Plus, Trash2 } from 'lucide-react';
+
+interface CredentialSummary {
+    id: number;
+    label: string;
+    login_url: string | null;
+    notes: string | null;
+    can_reveal: boolean;
+    can_manage: boolean;
+}
 
 interface ShowProps {
     website: Website & { team_members?: { id: number; name: string; email: string }[] };
     openTasks: Task[];
     completedTasks: Task[];
     recentActivity: TaskActivity[];
+    credentials: CredentialSummary[];
     canManageCredentials: boolean;
+    canCreateCredential: boolean;
     canManageTeam: boolean;
 }
 
-export default function Show({ website, openTasks, completedTasks, recentActivity, canManageTeam }: PageProps<ShowProps>) {
+export default function Show({
+    website,
+    openTasks,
+    completedTasks,
+    recentActivity,
+    credentials,
+    canManageCredentials,
+    canCreateCredential,
+    canManageTeam,
+}: PageProps<ShowProps>) {
     function destroy() {
         if (confirm(`Archive ${website.name}? This can be restored later by an administrator.`)) {
             router.delete(route('websites.destroy', website.id));
@@ -180,6 +201,14 @@ export default function Show({ website, openTasks, completedTasks, recentActivit
                             <h3 className="mb-2 text-sm font-semibold text-zinc-900">Notes</h3>
                             <p className="whitespace-pre-line text-sm text-zinc-600">{website.notes}</p>
                         </div>
+                    )}
+
+                    {canManageCredentials && (
+                        <CredentialsPanel
+                            websiteId={website.id}
+                            credentials={credentials}
+                            canCreateCredential={canCreateCredential}
+                        />
                     )}
                 </div>
             </div>

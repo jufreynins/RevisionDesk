@@ -113,7 +113,17 @@ class WebsiteController extends Controller
                 ->latest()
                 ->limit(15)
                 ->get(),
+            'credentials' => $website->credentials()->get(['id', 'website_id', 'label', 'login_url', 'notes'])
+                ->map(fn (WebsiteCredential $credential) => [
+                    'id' => $credential->id,
+                    'label' => $credential->label,
+                    'login_url' => $credential->login_url,
+                    'notes' => $credential->notes,
+                    'can_reveal' => $request->user()->can('view', $credential),
+                    'can_manage' => $request->user()->can('update', $credential),
+                ]),
             'canManageCredentials' => $request->user()->can('viewAny', WebsiteCredential::class),
+            'canCreateCredential' => $request->user()->can('create', WebsiteCredential::class),
             'canManageTeam' => $request->user()->can('manageTeam', $website),
         ]);
     }

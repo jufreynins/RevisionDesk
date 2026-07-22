@@ -4,6 +4,7 @@ import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
     Activity,
+    BarChart3,
     Bell,
     CalendarDays,
     ChevronDown,
@@ -89,16 +90,23 @@ export default function AuthenticatedLayout({
         },
         {
             label: 'Team',
-            href: '#',
+            href: route('team.index'),
             icon: Users,
-            active: false,
+            active: route().current('team.*'),
+            show: canManage,
+        },
+        {
+            label: 'Reports',
+            href: route('reports.index'),
+            icon: BarChart3,
+            active: route().current('reports.index'),
             show: canManage,
         },
         {
             label: 'Settings',
-            href: '#',
+            href: route('settings.index'),
             icon: Settings,
-            active: false,
+            active: route().current('settings.index'),
             show: user.role === 'administrator',
         },
     ];
