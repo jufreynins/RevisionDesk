@@ -12,13 +12,6 @@ class ActivityLogTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_client_cannot_access_the_activity_log(): void
-    {
-        $client = User::factory()->client()->create();
-
-        $this->actingAs($client)->get(route('activity-log.index'))->assertForbidden();
-    }
-
     public function test_project_manager_only_sees_activity_for_their_own_websites(): void
     {
         $pmA = User::factory()->projectManager()->create();

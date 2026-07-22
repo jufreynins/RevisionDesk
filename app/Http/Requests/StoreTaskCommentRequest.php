@@ -11,13 +11,7 @@ class StoreTaskCommentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $task = $this->route('task');
-
-        if ($this->boolean('is_internal')) {
-            return $this->user()->can('addInternalComment', $task);
-        }
-
-        return $this->user()->can('view', $task);
+        return $this->user()->can('view', $this->route('task'));
     }
 
     /**
@@ -29,7 +23,6 @@ class StoreTaskCommentRequest extends FormRequest
     {
         return [
             'body' => ['required', 'string'],
-            'is_internal' => ['boolean'],
             'attachments' => ['nullable', 'array'],
             'attachments.*' => ['file', 'max:10240', 'mimes:png,jpg,jpeg,webp,gif,pdf,docx,xlsx,zip,txt'],
         ];

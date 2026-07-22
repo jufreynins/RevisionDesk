@@ -17,13 +17,10 @@ class TaskCommentController extends Controller
 
     public function store(StoreTaskCommentRequest $request, Task $task, AttachmentUploader $uploader)
     {
-        $isInternal = $request->boolean('is_internal');
-
-        DB::transaction(function () use ($request, $task, $uploader, $isInternal) {
+        DB::transaction(function () use ($request, $task, $uploader) {
             $comment = $task->comments()->create([
                 'user_id' => $request->user()->id,
                 'body' => HtmlSanitizer::clean($request->validated('body')),
-                'is_internal' => $isInternal,
             ]);
 
             if ($request->hasFile('attachments')) {
@@ -36,7 +33,7 @@ class TaskCommentController extends Controller
             ]);
         });
 
-        $this->notifier->commentAdded($task, $request->user(), $isInternal);
+        $this->notifier->commentAdded($task, $request->user());
 
         return back()->with('success', 'Comment added.');
     }

@@ -11,71 +11,42 @@ class TaskCommentTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_developer_can_post_an_internal_comment(): void
+    public function test_assigned_developer_can_post_a_comment(): void
     {
         $developer = User::factory()->developer()->create();
         $task = Task::factory()->create(['assigned_to_id' => $developer->id]);
 
         $response = $this->actingAs($developer)->post(route('tasks.comments.store', $task), [
             'body' => 'Staging password rotated.',
-            'is_internal' => true,
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('task_comments', [
             'task_id' => $task->id,
-            'is_internal' => true,
+            'user_id' => $developer->id,
         ]);
     }
 
-    public function test_client_cannot_post_an_internal_comment(): void
+    public function test_developer_cannot_comment_on_a_task_not_assigned_to_them(): void
     {
-        $client = User::factory()->client()->create();
-        $task = Task::factory()->create(['requester_id' => $client->id]);
+        $developer = User::factory()->developer()->create();
+        $task = Task::factory()->create(['assigned_to_id' => null]);
 
-        $response = $this->actingAs($client)->post(route('tasks.comments.store', $task), [
-            'body' => 'Trying to sneak an internal note in.',
-            'is_internal' => true,
+        $response = $this->actingAs($developer)->post(route('tasks.comments.store', $task), [
+            'body' => 'Trying to comment on a task I cannot see.',
         ]);
 
         $response->assertForbidden();
     }
 
-    public function test_internal_comments_are_not_returned_to_client_users(): void
-    {
-        $client = User::factory()->client()->create();
-        $developer = User::factory()->developer()->create();
-        $task = Task::factory()->create(['requester_id' => $client->id, 'assigned_to_id' => $developer->id]);
-
-        $task->comments()->create([
-            'user_id' => $developer->id,
-            'body' => 'Internal-only debugging note.',
-            'is_internal' => true,
-        ]);
-
-        $task->comments()->create([
-            'user_id' => $client->id,
-            'body' => 'Client-visible reply.',
-            'is_internal' => false,
-        ]);
-
-        $response = $this->actingAs($client)->get(route('tasks.show', $task));
-
-        $response->assertInertia(fn ($page) => $page
-            ->has('comments', 1)
-            ->where('comments.0.body', 'Client-visible reply.')
-        );
-    }
-
-    public function test_internal_comments_are_visible_to_staff(): void
+    public function test_comments_are_visible_to_authorized_viewers(): void
     {
         $developer = User::factory()->developer()->create();
         $task = Task::factory()->create(['assigned_to_id' => $developer->id]);
 
         $task->comments()->create([
             'user_id' => $developer->id,
-            'body' => 'Internal-only debugging note.',
-            'is_internal' => true,
+            'body' => 'Investigating the checkout bug.',
         ]);
 
         $response = $this->actingAs($developer)->get(route('tasks.show', $task));

@@ -30,13 +30,9 @@ class UpdateTaskRequest extends FormRequest
             'priority' => ['required', 'in:low,normal,high,urgent,critical'],
             'status' => ['required', 'in:new,assigned,in_progress,waiting_for_client,blocked,ready_for_review,revision_needed,approved,completed,cancelled'],
             'assigned_to_id' => ['nullable', 'exists:users,id'],
-            'requester_id' => ['nullable', 'exists:users,id'],
             'due_date' => ['nullable', 'date'],
             'estimated_minutes' => ['nullable', 'integer', 'min:0'],
             'internal_notes' => ['nullable', 'string'],
-            'client_notes' => ['nullable', 'string'],
-            'browser' => ['nullable', 'string', 'max:100'],
-            'device' => ['nullable', 'string', 'max:100'],
             'related_task_id' => ['nullable', 'exists:tasks,id'],
             'is_recurring' => ['boolean'],
             'recurrence_rule' => ['nullable', 'string', 'max:100'],
@@ -48,9 +44,6 @@ class UpdateTaskRequest extends FormRequest
             'expected_result' => ['nullable', 'string'],
             'steps_to_reproduce' => ['nullable', 'string'],
             'client_deadline' => ['nullable', 'date'],
-
-            'tag_ids' => ['nullable', 'array'],
-            'tag_ids.*' => ['exists:tags,id'],
         ];
     }
 }

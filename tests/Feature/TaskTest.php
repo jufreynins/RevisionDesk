@@ -98,23 +98,23 @@ class TaskTest extends TestCase
         $this->assertSame('approved', $task->fresh()->status);
     }
 
-    public function test_client_can_reopen_their_own_completed_task(): void
+    public function test_administrator_can_reopen_a_completed_task(): void
     {
-        $client = User::factory()->client()->create();
-        $task = Task::factory()->create(['requester_id' => $client->id, 'status' => 'completed']);
+        $admin = User::factory()->administrator()->create();
+        $task = Task::factory()->create(['status' => 'completed']);
 
-        $response = $this->actingAs($client)->post(route('tasks.reopen', $task));
+        $response = $this->actingAs($admin)->post(route('tasks.reopen', $task));
 
         $response->assertRedirect();
         $this->assertSame('revision_needed', $task->fresh()->status);
     }
 
-    public function test_client_cannot_reopen_a_task_they_did_not_request(): void
+    public function test_developer_cannot_reopen_a_completed_task(): void
     {
-        $client = User::factory()->client()->create();
-        $task = Task::factory()->create(['requester_id' => null, 'status' => 'completed']);
+        $developer = User::factory()->developer()->create();
+        $task = Task::factory()->create(['assigned_to_id' => $developer->id, 'status' => 'completed']);
 
-        $response = $this->actingAs($client)->post(route('tasks.reopen', $task));
+        $response = $this->actingAs($developer)->post(route('tasks.reopen', $task));
 
         $response->assertForbidden();
     }

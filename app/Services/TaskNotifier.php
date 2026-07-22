@@ -21,21 +21,12 @@ class TaskNotifier
 
     public function statusChanged(Task $task, User $actor, string $newStatus): void
     {
-        $notification = TaskEventNotification::statusChanged($task, $actor, $newStatus);
-
-        $this->notify($task->requester, $actor, $notification);
-        $this->notify($task->assignedTo, $actor, $notification);
+        $this->notify($task->assignedTo, $actor, TaskEventNotification::statusChanged($task, $actor, $newStatus));
     }
 
-    public function commentAdded(Task $task, User $actor, bool $isInternal): void
+    public function commentAdded(Task $task, User $actor): void
     {
-        $notification = TaskEventNotification::commentAdded($task, $actor);
-
-        $this->notify($task->assignedTo, $actor, $notification);
-
-        if (! $isInternal) {
-            $this->notify($task->requester, $actor, $notification);
-        }
+        $this->notify($task->assignedTo, $actor, TaskEventNotification::commentAdded($task, $actor));
     }
 
     public function readyForReview(Task $task, User $actor): void
@@ -51,10 +42,7 @@ class TaskNotifier
 
     public function approved(Task $task, User $actor): void
     {
-        $notification = TaskEventNotification::approved($task, $actor);
-
-        $this->notify($task->assignedTo, $actor, $notification);
-        $this->notify($task->requester, $actor, $notification);
+        $this->notify($task->assignedTo, $actor, TaskEventNotification::approved($task, $actor));
     }
 
     public function dueSoon(Task $task): void

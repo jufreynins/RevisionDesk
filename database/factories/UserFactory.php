@@ -68,11 +68,4 @@ class UserFactory extends Factory
             'role' => User::ROLE_DEVELOPER,
         ]);
     }
-
-    public function client(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'role' => User::ROLE_CLIENT,
-        ]);
-    }
 }

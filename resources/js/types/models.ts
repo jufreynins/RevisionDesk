@@ -1,4 +1,4 @@
-export type UserRole = 'administrator' | 'project_manager' | 'developer' | 'client';
+export type UserRole = 'administrator' | 'project_manager' | 'developer';
 
 export interface User {
     id: number;
@@ -75,12 +75,6 @@ export type TaskType =
     | 'website_maintenance'
     | 'other';
 
-export interface Tag {
-    id: number;
-    name: string;
-    slug: string;
-}
-
 export interface TaskAttachment {
     id: number;
     task_id: number;
@@ -100,7 +94,6 @@ export interface TaskComment {
     user_id: number;
     user?: User;
     body: string;
-    is_internal: boolean;
     edited_at: string | null;
     attachments?: TaskAttachment[];
     created_at: string;
@@ -152,14 +145,9 @@ export interface Task {
     status: TaskStatus;
     assigned_to_id: number | null;
     assigned_to?: User | null;
-    requester_id: number | null;
-    requester?: User | null;
     due_date: string | null;
     estimated_minutes: number | null;
     internal_notes?: string | null;
-    client_notes: string | null;
-    browser: string | null;
-    device: string | null;
     related_task_id: number | null;
     related_task?: { id: number; ticket_number: string; title: string } | null;
     is_recurring: boolean;
@@ -171,7 +159,6 @@ export interface Task {
     expected_result: string | null;
     steps_to_reproduce: string | null;
     client_deadline: string | null;
-    tags?: Tag[];
     checklist_items?: TaskChecklistItem[];
     time_entries?: TaskTimeEntry[];
     attachments?: TaskAttachment[];
@@ -213,5 +200,4 @@ export interface TaskPermissions {
     canDelete: boolean;
     canApprove: boolean;
     canReopen: boolean;
-    canAddInternalComment: boolean;
 }

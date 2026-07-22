@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -23,13 +22,9 @@ class Task extends Model
         'priority',
         'status',
         'assigned_to_id',
-        'requester_id',
         'due_date',
         'estimated_minutes',
         'internal_notes',
-        'client_notes',
-        'browser',
-        'device',
         'related_task_id',
         'is_recurring',
         'recurrence_rule',
@@ -92,11 +87,6 @@ class Task extends Model
         return $this->belongsTo(User::class, 'assigned_to_id');
     }
 
-    public function requester(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'requester_id');
-    }
-
     public function relatedTask(): BelongsTo
     {
         return $this->belongsTo(Task::class, 'related_task_id');
@@ -125,11 +115,6 @@ class Task extends Model
     public function activities(): HasMany
     {
         return $this->hasMany(TaskActivity::class)->orderByDesc('created_at');
-    }
-
-    public function tags(): BelongsToMany
-    {
-        return $this->belongsToMany(Tag::class, 'task_tags');
     }
 
     public function checklistProgressLabel(): string

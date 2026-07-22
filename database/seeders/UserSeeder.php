@@ -34,14 +34,5 @@ class UserSeeder extends Seeder
                 'can_view_credentials' => $index === 0,
             ]);
         }
-
-        $clientNames = ['Morgan Villanueva', 'Taylor Gomez'];
-        foreach ($clientNames as $index => $name) {
-            User::factory()->client()->create([
-                'name' => $name,
-                'email' => 'client'.($index + 1).'@revisiondesk.test',
-                'password' => Hash::make('password'),
-            ]);
-        }
     }
 }

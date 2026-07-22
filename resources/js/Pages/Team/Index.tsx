@@ -18,14 +18,12 @@ const ROLE_LABEL: Record<string, string> = {
     administrator: 'Administrator',
     project_manager: 'Project Manager',
     developer: 'Developer',
-    client: 'Client',
 };
 
 const ROLE_BADGE: Record<string, string> = {
     administrator: 'badge-red',
     project_manager: 'badge-blue',
     developer: 'badge-teal',
-    client: '',
 };
 
 export default function Index({ users, filters }: PageProps<TeamIndexProps>) {

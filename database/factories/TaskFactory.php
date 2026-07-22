@@ -36,8 +36,6 @@ class TaskFactory extends Factory
             ]),
             'due_date' => fake()->optional(0.8)->dateTimeBetween('-1 week', '+3 weeks'),
             'estimated_minutes' => fake()->optional(0.7)->randomElement([30, 60, 90, 120, 240, 480]),
-            'browser' => fake()->optional()->randomElement(['Chrome', 'Firefox', 'Safari', 'Edge']),
-            'device' => fake()->optional()->randomElement(['Desktop', 'Mobile', 'Tablet']),
         ];
     }
 

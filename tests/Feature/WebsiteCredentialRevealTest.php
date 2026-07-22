@@ -54,20 +54,4 @@ class WebsiteCredentialRevealTest extends TestCase
         $response->assertForbidden();
         $this->assertDatabaseMissing('credential_views', ['website_credential_id' => $credential->id]);
     }
-
-    public function test_client_cannot_reveal_a_credential(): void
-    {
-        $client = User::factory()->client()->create();
-        $website = Website::factory()->create();
-        $credential = WebsiteCredential::create([
-            'website_id' => $website->id,
-            'label' => 'WP Admin',
-            'username' => 'admin',
-            'password' => 'secret-pass',
-        ]);
-
-        $this->actingAs($client)
-            ->getJson(route('websites.credentials.reveal', [$website->id, $credential->id]))
-            ->assertForbidden();
-    }
 }

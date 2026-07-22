@@ -21,8 +21,6 @@ class User extends Authenticatable
 
     public const ROLE_DEVELOPER = 'developer';
 
-    public const ROLE_CLIENT = 'client';
-
     /**
      * The attributes that are mass assignable.
      *
@@ -79,20 +77,6 @@ class User extends Authenticatable
         return $this->role === self::ROLE_DEVELOPER;
     }
 
-    public function isClient(): bool
-    {
-        return $this->role === self::ROLE_CLIENT;
-    }
-
-    public function isInternal(): bool
-    {
-        return in_array($this->role, [
-            self::ROLE_ADMINISTRATOR,
-            self::ROLE_PROJECT_MANAGER,
-            self::ROLE_DEVELOPER,
-        ], true);
-    }
-
     public function websites(): BelongsToMany
     {
         return $this->belongsToMany(Website::class, 'website_user');
@@ -106,11 +90,6 @@ class User extends Authenticatable
     public function assignedTasks(): HasMany
     {
         return $this->hasMany(Task::class, 'assigned_to_id');
-    }
-
-    public function requestedTasks(): HasMany
-    {
-        return $this->hasMany(Task::class, 'requester_id');
     }
 
     public function comments(): HasMany

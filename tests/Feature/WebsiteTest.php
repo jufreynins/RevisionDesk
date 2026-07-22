@@ -43,13 +43,6 @@ class WebsiteTest extends TestCase
         $this->assertDatabaseMissing('websites', ['name' => 'Test Client Site']);
     }
 
-    public function test_client_cannot_view_the_websites_module(): void
-    {
-        $client = User::factory()->client()->create();
-
-        $this->actingAs($client)->get(route('websites.index'))->assertForbidden();
-    }
-
     public function test_project_manager_only_sees_their_own_managed_websites(): void
     {
         $pmA = User::factory()->projectManager()->create();

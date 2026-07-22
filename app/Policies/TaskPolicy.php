@@ -28,12 +28,7 @@ class TaskPolicy
             return $task->website->project_manager_id === $user->id;
         }
 
-        if ($user->isDeveloper()) {
-            return $task->assigned_to_id === $user->id || $task->requester_id === $user->id;
-        }
-
-        // Client: only their own submitted requests.
-        return $task->requester_id === $user->id;
+        return $task->assigned_to_id === $user->id;
     }
 
     /**
@@ -44,7 +39,6 @@ class TaskPolicy
         return in_array($user->role, [
             User::ROLE_ADMINISTRATOR,
             User::ROLE_PROJECT_MANAGER,
-            User::ROLE_CLIENT,
         ], true);
     }
 
@@ -98,19 +92,7 @@ class TaskPolicy
      */
     public function reopen(User $user, Task $task): bool
     {
-        if ($this->update($user, $task)) {
-            return true;
-        }
-
-        return $user->isClient() && $task->requester_id === $user->id;
-    }
-
-    /**
-     * Determine whether the user can add an internal (staff-only) comment.
-     */
-    public function addInternalComment(User $user, Task $task): bool
-    {
-        return $user->isInternal() && $this->view($user, $task);
+        return $this->update($user, $task);
     }
 
     /**

@@ -38,7 +38,6 @@ export default function AuthenticatedLayout({
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const { auth, unreadNotificationCount } = usePage<PageProps>().props;
     const user = auth.user;
-    const isInternal = user.role !== 'client';
     const canManage = user.role === 'administrator' || user.role === 'project_manager';
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -73,14 +72,14 @@ export default function AuthenticatedLayout({
                     href: route('tasks.board'),
                     icon: Kanban,
                     active: route().current('tasks.board'),
-                    show: isInternal,
+                    show: true,
                 },
                 {
                     label: 'Calendar',
                     href: route('tasks.calendar'),
                     icon: CalendarDays,
                     active: route().current('tasks.calendar'),
-                    show: isInternal,
+                    show: true,
                 },
             ],
         },
@@ -92,14 +91,14 @@ export default function AuthenticatedLayout({
                     href: route('websites.index'),
                     icon: Menu,
                     active: route().current('websites.*'),
-                    show: isInternal,
+                    show: true,
                 },
                 {
                     label: 'Activity Log',
                     href: route('activity-log.index'),
                     icon: Activity,
                     active: route().current('activity-log.index'),
-                    show: isInternal,
+                    show: true,
                 },
             ],
         },

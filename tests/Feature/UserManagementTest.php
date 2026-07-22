@@ -41,13 +41,6 @@ class UserManagementTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function test_client_cannot_view_the_team_list(): void
-    {
-        $client = User::factory()->client()->create();
-
-        $this->actingAs($client)->get(route('team.index'))->assertForbidden();
-    }
-
     public function test_project_manager_can_view_but_not_create_team_members(): void
     {
         $pm = User::factory()->projectManager()->create();

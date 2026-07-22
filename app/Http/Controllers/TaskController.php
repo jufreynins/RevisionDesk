@@ -6,7 +6,6 @@ use App\Concerns\ScopesTasksToUser;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Requests\UpdateTaskStatusRequest;
-use App\Models\Tag;
 use App\Models\Task;
 use App\Models\TaskActivity;
 use App\Models\User;
@@ -33,17 +32,15 @@ class TaskController extends Controller
         $user = $request->user();
         $viewMode = $request->input('view', 'mine');
 
-        $query = Task::query()->with(['website:id,name', 'assignedTo:id,name', 'requester:id,name']);
+        $query = Task::query()->with(['website:id,name', 'assignedTo:id,name']);
 
         $this->scopeToVisibleTasks($query, $user);
 
         if ($viewMode === 'mine') {
-            $query->where(function ($q) use ($user) {
-                $q->where('assigned_to_id', $user->id)->orWhere('requester_id', $user->id);
-            });
+            $query->where('assigned_to_id', $user->id);
         }
 
-        foreach (['website_id', 'assigned_to_id', 'requester_id', 'task_type', 'priority', 'status'] as $field) {
+        foreach (['website_id', 'assigned_to_id', 'task_type', 'priority', 'status'] as $field) {
             if ($request->filled($field)) {
                 $query->where($field, $request->input($field));
             }
@@ -53,11 +50,6 @@ class TaskController extends Controller
             $query->whereNotNull('due_date')
                 ->where('due_date', '<', now())
                 ->whereNotIn('status', ['completed', 'cancelled']);
-        }
-
-        if ($request->filled('tag_id')) {
-            $tagId = $request->input('tag_id');
-            $query->whereHas('tags', fn ($q) => $q->where('tags.id', $tagId));
         }
 
         if ($search = trim((string) $request->input('search'))) {
@@ -80,12 +72,11 @@ class TaskController extends Controller
         return Inertia::render('Tasks/Index', [
             'tasks' => $tasks,
             'filters' => $request->only([
-                'view', 'website_id', 'assigned_to_id', 'requester_id', 'task_type',
-                'priority', 'status', 'overdue', 'tag_id', 'search', 'sort',
+                'view', 'website_id', 'assigned_to_id', 'task_type',
+                'priority', 'status', 'overdue', 'search', 'sort',
             ]),
             'websites' => Website::orderBy('name')->get(['id', 'name']),
             'users' => User::orderBy('name')->get(['id', 'name', 'role']),
-            'tags' => Tag::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -137,7 +128,6 @@ class TaskController extends Controller
         return Inertia::render('Tasks/Create', [
             'websites' => Website::orderBy('name')->get(['id', 'name', 'url']),
             'users' => User::where('is_active', true)->orderBy('name')->get(['id', 'name', 'role']),
-            'tags' => Tag::orderBy('name')->get(['id', 'name']),
             'defaultWebsiteId' => $request->integer('website_id') ?: null,
         ]);
     }
@@ -148,16 +138,11 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request, AttachmentUploader $uploader)
     {
         $task = DB::transaction(function () use ($request, $uploader) {
-            $data = $request->safe()->except(['tag_ids', 'checklist_items', 'attachments']);
+            $data = $request->safe()->except(['checklist_items', 'attachments']);
             $data['description'] = HtmlSanitizer::clean($data['description'] ?? null);
-            $data['requester_id'] = $data['requester_id'] ?? $request->user()->id;
 
             /** @var Task $task */
             $task = Task::create($data);
-
-            if ($tagIds = $request->input('tag_ids')) {
-                $task->tags()->sync($tagIds);
-            }
 
             foreach ($request->input('checklist_items', []) as $index => $text) {
                 if (trim((string) $text) !== '') {
@@ -197,9 +182,7 @@ class TaskController extends Controller
         $task->load([
             'website:id,name,url',
             'assignedTo:id,name',
-            'requester:id,name',
             'relatedTask:id,ticket_number,title',
-            'tags:id,name',
             'checklistItems.completedBy:id,name',
             'timeEntries.user:id,name',
             'attachments.uploadedBy:id,name',
@@ -208,18 +191,8 @@ class TaskController extends Controller
 
         $comments = $task->comments()->with(['user:id,name,role', 'attachments'])->get();
 
-        if (! $user->isInternal()) {
-            $comments = $comments->where('is_internal', false)->values();
-        }
-
-        $taskData = $task->toArray();
-
-        if (! $user->isInternal()) {
-            unset($taskData['internal_notes']);
-        }
-
         return Inertia::render('Tasks/Show', [
-            'task' => $taskData,
+            'task' => $task,
             'comments' => $comments,
             'checklistProgress' => $task->checklistProgressLabel(),
             'totalMinutesSpent' => $task->totalMinutesSpent(),
@@ -229,7 +202,6 @@ class TaskController extends Controller
                 'canDelete' => $user->can('delete', $task),
                 'canApprove' => $user->can('approve', $task),
                 'canReopen' => $user->can('reopen', $task),
-                'canAddInternalComment' => $user->can('addInternalComment', $task),
             ],
         ]);
     }
@@ -242,10 +214,9 @@ class TaskController extends Controller
         $this->authorize('update', $task);
 
         return Inertia::render('Tasks/Edit', [
-            'task' => $task->load('tags:id,name'),
+            'task' => $task,
             'websites' => Website::orderBy('name')->get(['id', 'name', 'url']),
             'users' => User::where('is_active', true)->orderBy('name')->get(['id', 'name', 'role']),
-            'tags' => Tag::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -257,14 +228,10 @@ class TaskController extends Controller
         $original = $task->only(['status', 'priority', 'assigned_to_id']);
 
         DB::transaction(function () use ($request, $task, $original) {
-            $data = $request->safe()->except(['tag_ids']);
+            $data = $request->validated();
             $data['description'] = HtmlSanitizer::clean($data['description'] ?? null);
 
             $task->update($data);
-
-            if ($request->has('tag_ids')) {
-                $task->tags()->sync($request->input('tag_ids', []));
-            }
 
             $this->logChanges($task, $request->user(), $original);
         });

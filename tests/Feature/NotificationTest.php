@@ -25,7 +25,6 @@ class NotificationTest extends TestCase
 
         $this->actingAs($pm)->post(route('tasks.comments.store', $task), [
             'body' => 'Please check this.',
-            'is_internal' => false,
         ]);
 
         Notification::assertSentTo(
@@ -33,38 +32,6 @@ class NotificationTest extends TestCase
             TaskEventNotification::class,
             fn ($notification) => $notification->type === 'comment_added'
         );
-    }
-
-    public function test_client_is_not_notified_of_internal_comments(): void
-    {
-        Notification::fake();
-
-        $client = User::factory()->client()->create();
-        $developer = User::factory()->developer()->create();
-        $task = Task::factory()->create(['assigned_to_id' => $developer->id, 'requester_id' => $client->id]);
-
-        $this->actingAs($developer)->post(route('tasks.comments.store', $task), [
-            'body' => 'Internal debugging note.',
-            'is_internal' => true,
-        ]);
-
-        Notification::assertNotSentTo($client, TaskEventNotification::class);
-    }
-
-    public function test_client_is_notified_of_client_visible_comments(): void
-    {
-        Notification::fake();
-
-        $client = User::factory()->client()->create();
-        $developer = User::factory()->developer()->create();
-        $task = Task::factory()->create(['assigned_to_id' => $developer->id, 'requester_id' => $client->id]);
-
-        $this->actingAs($developer)->post(route('tasks.comments.store', $task), [
-            'body' => 'Done, please review.',
-            'is_internal' => false,
-        ]);
-
-        Notification::assertSentTo($client, TaskEventNotification::class);
     }
 
     public function test_project_manager_is_notified_when_task_is_submitted_for_review(): void
@@ -96,11 +63,10 @@ class NotificationTest extends TestCase
         Notification::fake();
 
         $developer = User::factory()->developer()->create();
-        $task = Task::factory()->create(['assigned_to_id' => $developer->id, 'requester_id' => $developer->id]);
+        $task = Task::factory()->create(['assigned_to_id' => $developer->id]);
 
         $this->actingAs($developer)->post(route('tasks.comments.store', $task), [
             'body' => 'Self comment.',
-            'is_internal' => false,
         ]);
 
         Notification::assertNothingSent();

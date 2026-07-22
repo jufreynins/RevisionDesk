@@ -12,7 +12,7 @@ class WebsitePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->isInternal();
+        return true;
     }
 
     /**
@@ -20,10 +20,6 @@ class WebsitePolicy
      */
     public function view(User $user, Website $website): bool
     {
-        if (! $user->isInternal()) {
-            return false;
-        }
-
         if ($user->isAdministrator()) {
             return true;
         }

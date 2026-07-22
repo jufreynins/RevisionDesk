@@ -16,14 +16,12 @@ class TaskComment extends Model
         'task_id',
         'user_id',
         'body',
-        'is_internal',
         'edited_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_internal' => 'boolean',
             'edited_at' => 'datetime',
         ];
     }

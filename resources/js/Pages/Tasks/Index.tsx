@@ -1,7 +1,7 @@
 import { PriorityBadge, STATUS_OPTIONS, StatusBadge } from '@/Components/Badges';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
-import { Paginated, Tag, Task, User, Website } from '@/types/models';
+import { Paginated, Task, User, Website } from '@/types/models';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus, Search, X } from 'lucide-react';
 import { FormEvent, useState } from 'react';
@@ -11,7 +11,6 @@ interface IndexProps {
     filters: Record<string, string | undefined>;
     websites: Website[];
     users: User[];
-    tags: Tag[];
 }
 
 export default function Index({ tasks, filters, websites, users }: PageProps<IndexProps>) {
@@ -174,7 +173,6 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
                                     <th>Priority</th>
                                     <th>Status</th>
                                     <th>Assigned</th>
-                                    <th>Requester</th>
                                     <th>Due</th>
                                 </tr>
                             </thead>
@@ -200,7 +198,6 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
                                             <StatusBadge status={task.status} />
                                         </td>
                                         <td style={{ color: 'var(--text-muted)' }}>{task.assigned_to?.name ?? '—'}</td>
-                                        <td style={{ color: 'var(--text-muted)' }}>{task.requester?.name ?? '—'}</td>
                                         <td style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>
                                             {task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}
                                         </td>

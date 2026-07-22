@@ -16,12 +16,11 @@ return new class extends Migration
             $table->foreignId('task_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->longText('body');
-            $table->boolean('is_internal')->default(false);
             $table->timestamp('edited_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
 
-            $table->index(['task_id', 'is_internal']);
+            $table->index('task_id');
         });
     }
 

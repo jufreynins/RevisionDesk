@@ -34,16 +34,11 @@ return new class extends Migration
             ])->default('new');
 
             $table->foreignId('assigned_to_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('requester_id')->nullable()->constrained('users')->nullOnDelete();
 
             $table->date('due_date')->nullable();
             $table->unsignedInteger('estimated_minutes')->nullable();
 
             $table->text('internal_notes')->nullable();
-            $table->text('client_notes')->nullable();
-
-            $table->string('browser')->nullable();
-            $table->string('device')->nullable();
 
             $table->foreignId('related_task_id')->nullable()->constrained('tasks')->nullOnDelete();
             $table->boolean('is_recurring')->default(false);

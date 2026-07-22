@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
-import { Tag, Task, User, Website } from '@/types/models';
+import { Task, User, Website } from '@/types/models';
 import { Head } from '@inertiajs/react';
 import TaskForm from './TaskForm';
 
@@ -8,10 +8,9 @@ interface EditProps {
     task: Task;
     websites: Website[];
     users: User[];
-    tags: Tag[];
 }
 
-export default function Edit({ task, websites, users, tags }: PageProps<EditProps>) {
+export default function Edit({ task, websites, users }: PageProps<EditProps>) {
     return (
         <AuthenticatedLayout
             header={
@@ -29,7 +28,6 @@ export default function Edit({ task, websites, users, tags }: PageProps<EditProp
                     task={task}
                     websites={websites}
                     users={users}
-                    tags={tags}
                     submitUrl={route('tasks.update', task.id)}
                 />
             </div>

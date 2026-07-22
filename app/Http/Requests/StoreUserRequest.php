@@ -27,7 +27,7 @@ class StoreUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::defaults()],
-            'role' => ['required', 'in:administrator,project_manager,developer,client'],
+            'role' => ['required', 'in:administrator,project_manager,developer'],
             'phone' => ['nullable', 'string', 'max:50'],
             'is_active' => ['boolean'],
             'can_view_credentials' => ['boolean'],

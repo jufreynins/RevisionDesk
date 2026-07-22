@@ -2,21 +2,12 @@ import HtmlContent from '@/Components/HtmlContent';
 import RichTextEditor from '@/Components/RichTextEditor';
 import { Task, TaskComment } from '@/types/models';
 import { useForm } from '@inertiajs/react';
-import { Lock, Paperclip } from 'lucide-react';
+import { Paperclip } from 'lucide-react';
 import { FormEvent } from 'react';
 
-export default function CommentsPanel({
-    task,
-    comments,
-    canAddInternalComment,
-}: {
-    task: Task;
-    comments: TaskComment[];
-    canAddInternalComment: boolean;
-}) {
+export default function CommentsPanel({ task, comments }: { task: Task; comments: TaskComment[] }) {
     const { data, setData, post, processing, reset } = useForm({
         body: '',
-        is_internal: false as boolean,
         attachments: [] as File[],
     });
 
@@ -45,7 +36,7 @@ export default function CommentsPanel({
                             key={comment.id}
                             style={{
                                 borderRadius: 8,
-                                border: `1px solid ${comment.is_internal ? 'var(--yellow)' : 'var(--border-color)'}`,
+                                border: '1px solid var(--border-color)',
                                 padding: 12,
                             }}
                         >
@@ -72,12 +63,7 @@ export default function CommentsPanel({
                                         {comment.user?.role.replace('_', ' ')}
                                     </span>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: 'var(--text-muted)' }}>
-                                    {comment.is_internal && (
-                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--yellow)' }}>
-                                            <Lock width={12} height={12} strokeWidth={1.5} /> Internal
-                                        </span>
-                                    )}
+                                <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                                     {new Date(comment.created_at).toLocaleString()}
                                 </div>
                             </div>
@@ -113,29 +99,16 @@ export default function CommentsPanel({
                     <RichTextEditor value={data.body} onChange={(html) => setData('body', html)} placeholder="Write a comment..." />
 
                     <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                            <label style={{ display: 'flex', cursor: 'pointer', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-muted)' }}>
-                                <Paperclip width={14} height={14} strokeWidth={1.5} />
-                                {data.attachments.length > 0 ? `${data.attachments.length} file(s)` : 'Attach files'}
-                                <input
-                                    type="file"
-                                    multiple
-                                    className="hidden"
-                                    onChange={(e) => setData('attachments', Array.from(e.target.files ?? []))}
-                                />
-                            </label>
-
-                            {canAddInternalComment && (
-                                <label className="form-check" style={{ margin: 0, fontSize: 12 }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={data.is_internal}
-                                        onChange={(e) => setData('is_internal', e.target.checked)}
-                                    />
-                                    Internal note (staff only)
-                                </label>
-                            )}
-                        </div>
+                        <label style={{ display: 'flex', cursor: 'pointer', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-muted)' }}>
+                            <Paperclip width={14} height={14} strokeWidth={1.5} />
+                            {data.attachments.length > 0 ? `${data.attachments.length} file(s)` : 'Attach files'}
+                            <input
+                                type="file"
+                                multiple
+                                className="hidden"
+                                onChange={(e) => setData('attachments', Array.from(e.target.files ?? []))}
+                            />
+                        </label>
 
                         <button type="submit" disabled={processing} className="btn btn-primary btn-sm">
                             Post Comment

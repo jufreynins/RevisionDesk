@@ -1,17 +1,16 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
-import { Tag, User, Website } from '@/types/models';
+import { User, Website } from '@/types/models';
 import { Head } from '@inertiajs/react';
 import TaskForm from './TaskForm';
 
 interface CreateProps {
     websites: Website[];
     users: User[];
-    tags: Tag[];
     defaultWebsiteId: number | null;
 }
 
-export default function Create({ websites, users, tags, defaultWebsiteId }: PageProps<CreateProps>) {
+export default function Create({ websites, users, defaultWebsiteId }: PageProps<CreateProps>) {
     return (
         <AuthenticatedLayout
             header={
@@ -28,7 +27,6 @@ export default function Create({ websites, users, tags, defaultWebsiteId }: Page
                     mode="create"
                     websites={websites}
                     users={users}
-                    tags={tags}
                     defaultWebsiteId={defaultWebsiteId}
                     submitUrl={route('tasks.store')}
                 />

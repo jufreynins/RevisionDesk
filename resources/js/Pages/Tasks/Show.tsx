@@ -108,12 +108,10 @@ export default function Show({ task, comments, permissions }: PageProps<ShowProp
                         </div>
                     )}
 
-                    {permissions.canAddInternalComment && task.internal_notes && (
-                        <div className="card" style={{ borderColor: 'var(--yellow)' }}>
+                    {task.internal_notes && (
+                        <div className="card">
                             <div className="card-header">
-                                <div className="card-title" style={{ color: 'var(--yellow)' }}>
-                                    Internal Notes (staff only)
-                                </div>
+                                <div className="card-title">Notes</div>
                             </div>
                             <div className="card-body">
                                 <p style={{ fontSize: 13, whiteSpace: 'pre-line' }}>{task.internal_notes}</p>
@@ -121,24 +119,9 @@ export default function Show({ task, comments, permissions }: PageProps<ShowProp
                         </div>
                     )}
 
-                    {task.client_notes && (
-                        <div className="card">
-                            <div className="card-header">
-                                <div className="card-title">Client Notes</div>
-                            </div>
-                            <div className="card-body">
-                                <p style={{ fontSize: 13, whiteSpace: 'pre-line' }}>{task.client_notes}</p>
-                            </div>
-                        </div>
-                    )}
-
                     <AttachmentsPanel task={task} />
 
-                    <CommentsPanel
-                        task={task}
-                        comments={comments}
-                        canAddInternalComment={permissions.canAddInternalComment}
-                    />
+                    <CommentsPanel task={task} comments={comments} />
 
                     <ActivityTimeline activities={task.activities ?? []} />
                 </div>
@@ -163,10 +146,6 @@ export default function Show({ task, comments, permissions }: PageProps<ShowProp
                                     <dd>{task.assigned_to?.name ?? 'Unassigned'}</dd>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                                    <dt style={{ color: 'var(--text-muted)' }}>Requester</dt>
-                                    <dd>{task.requester?.name ?? '—'}</dd>
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                     <dt style={{ color: 'var(--text-muted)' }}>Created</dt>
                                     <dd>{new Date(task.created_at).toLocaleDateString()}</dd>
                                 </div>
@@ -174,38 +153,7 @@ export default function Show({ task, comments, permissions }: PageProps<ShowProp
                                     <dt style={{ color: 'var(--text-muted)' }}>Due Date</dt>
                                     <dd>{task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}</dd>
                                 </div>
-                                {task.browser && (
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-                                        <dt style={{ color: 'var(--text-muted)' }}>Browser</dt>
-                                        <dd>{task.browser}</dd>
-                                    </div>
-                                )}
-                                {task.device && (
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-                                        <dt style={{ color: 'var(--text-muted)' }}>Device</dt>
-                                        <dd>{task.device}</dd>
-                                    </div>
-                                )}
                             </dl>
-
-                            {task.tags && task.tags.length > 0 && (
-                                <div
-                                    style={{
-                                        marginTop: 12,
-                                        paddingTop: 12,
-                                        borderTop: '1px solid var(--border-color)',
-                                        display: 'flex',
-                                        flexWrap: 'wrap',
-                                        gap: 6,
-                                    }}
-                                >
-                                    {task.tags.map((tag) => (
-                                        <span key={tag.id} className="badge badge-blue">
-                                            {tag.name}
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
                         </div>
                     </div>
 

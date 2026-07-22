@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Task;
 use App\Models\User;
+use App\Models\Website;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,21 +12,37 @@ class TaskPermissionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_client_can_view_their_own_task(): void
+    public function test_developer_can_view_their_assigned_task(): void
     {
-        $client = User::factory()->client()->create();
-        $task = Task::factory()->create(['requester_id' => $client->id]);
+        $developer = User::factory()->developer()->create();
+        $task = Task::factory()->create(['assigned_to_id' => $developer->id]);
 
-        $this->actingAs($client)->get(route('tasks.show', $task))->assertOk();
+        $this->actingAs($developer)->get(route('tasks.show', $task))->assertOk();
     }
 
-    public function test_client_cannot_view_another_clients_task(): void
+    public function test_developer_cannot_view_a_task_not_assigned_to_them(): void
     {
-        $clientA = User::factory()->client()->create();
-        $clientB = User::factory()->client()->create();
-        $task = Task::factory()->create(['requester_id' => $clientB->id]);
+        $developer = User::factory()->developer()->create();
+        $task = Task::factory()->create(['assigned_to_id' => null]);
 
-        $this->actingAs($clientA)->get(route('tasks.show', $task))->assertForbidden();
+        $this->actingAs($developer)->get(route('tasks.show', $task))->assertForbidden();
+    }
+
+    public function test_project_manager_can_view_a_task_on_their_website(): void
+    {
+        $pm = User::factory()->projectManager()->create();
+        $website = Website::factory()->create(['project_manager_id' => $pm->id]);
+        $task = Task::factory()->create(['website_id' => $website->id]);
+
+        $this->actingAs($pm)->get(route('tasks.show', $task))->assertOk();
+    }
+
+    public function test_project_manager_cannot_view_a_task_on_another_managers_website(): void
+    {
+        $pm = User::factory()->projectManager()->create();
+        $task = Task::factory()->create();
+
+        $this->actingAs($pm)->get(route('tasks.show', $task))->assertForbidden();
     }
 
     public function test_administrator_can_view_any_task(): void
@@ -38,11 +55,11 @@ class TaskPermissionTest extends TestCase
 
     public function test_task_index_only_lists_tasks_visible_to_the_current_role(): void
     {
-        $client = User::factory()->client()->create();
-        $ownTask = Task::factory()->create(['requester_id' => $client->id]);
+        $developer = User::factory()->developer()->create();
+        $ownTask = Task::factory()->create(['assigned_to_id' => $developer->id]);
         Task::factory()->create();
 
-        $response = $this->actingAs($client)->get(route('tasks.index', ['view' => 'all']));
+        $response = $this->actingAs($developer)->get(route('tasks.index', ['view' => 'all']));
 
         $response->assertInertia(fn ($page) => $page
             ->has('tasks.data', 1)

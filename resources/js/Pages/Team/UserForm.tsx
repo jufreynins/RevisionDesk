@@ -10,7 +10,6 @@ const ROLES = [
     { value: 'administrator', label: 'Administrator' },
     { value: 'project_manager', label: 'Project Manager' },
     { value: 'developer', label: 'Developer' },
-    { value: 'client', label: 'Client' },
 ];
 
 interface UserFormProps {

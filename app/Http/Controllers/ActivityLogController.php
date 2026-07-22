@@ -17,8 +17,6 @@ class ActivityLogController extends Controller
     {
         $user = $request->user();
 
-        abort_unless($user->isInternal(), 403);
-
         $query = TaskActivity::query()
             ->whereHas('task', function ($taskQuery) use ($user) {
                 $this->scopeToVisibleTasks($taskQuery, $user);

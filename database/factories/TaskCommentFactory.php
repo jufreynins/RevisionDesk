@@ -23,14 +23,6 @@ class TaskCommentFactory extends Factory
             'task_id' => Task::factory(),
             'user_id' => User::factory(),
             'body' => '<p>'.fake()->paragraph(2).'</p>',
-            'is_internal' => false,
         ];
-    }
-
-    public function internal(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_internal' => true,
-        ]);
     }
 }

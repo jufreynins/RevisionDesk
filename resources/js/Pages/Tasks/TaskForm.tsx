@@ -4,7 +4,7 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import RichTextEditor from '@/Components/RichTextEditor';
 import TextInput from '@/Components/TextInput';
-import { Tag, Task, User, Website } from '@/types/models';
+import { Task, User, Website } from '@/types/models';
 import { useForm } from '@inertiajs/react';
 import { Paperclip, Plus, Trash2 } from 'lucide-react';
 import { FormEvent, useState } from 'react';
@@ -21,12 +21,11 @@ interface TaskFormProps {
     task?: Task;
     websites: Website[];
     users: User[];
-    tags: Tag[];
     defaultWebsiteId?: number | null;
     submitUrl: string;
 }
 
-export default function TaskForm({ mode, task, websites, users, tags, defaultWebsiteId, submitUrl }: TaskFormProps) {
+export default function TaskForm({ mode, task, websites, users, defaultWebsiteId, submitUrl }: TaskFormProps) {
     const [showRevisionDetails, setShowRevisionDetails] = useState(
         !!(task?.page_name || task?.current_issue || task?.requested_change),
     );
@@ -40,13 +39,9 @@ export default function TaskForm({ mode, task, websites, users, tags, defaultWeb
         priority: task?.priority ?? 'normal',
         status: task?.status ?? 'new',
         assigned_to_id: task?.assigned_to_id ?? ('' as number | ''),
-        requester_id: task?.requester_id ?? ('' as number | ''),
         due_date: task?.due_date?.slice(0, 10) ?? '',
         estimated_minutes: task?.estimated_minutes ?? ('' as number | ''),
         internal_notes: task?.internal_notes ?? '',
-        client_notes: task?.client_notes ?? '',
-        browser: task?.browser ?? '',
-        device: task?.device ?? '',
         page_name: task?.page_name ?? '',
         page_section: task?.page_section ?? '',
         current_issue: task?.current_issue ?? '',
@@ -54,7 +49,6 @@ export default function TaskForm({ mode, task, websites, users, tags, defaultWeb
         expected_result: task?.expected_result ?? '',
         steps_to_reproduce: task?.steps_to_reproduce ?? '',
         client_deadline: task?.client_deadline?.slice(0, 10) ?? '',
-        tag_ids: task?.tags?.map((t) => t.id) ?? ([] as number[]),
         checklist_items: [] as string[],
         attachments: [] as File[],
     });
@@ -80,10 +74,6 @@ export default function TaskForm({ mode, task, websites, users, tags, defaultWeb
                 setData('page_url', website.url);
             }
         }
-    }
-
-    function toggleTag(id: number) {
-        setData('tag_ids', data.tag_ids.includes(id) ? data.tag_ids.filter((t) => t !== id) : [...data.tag_ids, id]);
     }
 
     function addChecklistItem() {
@@ -195,35 +185,13 @@ export default function TaskForm({ mode, task, websites, users, tags, defaultWeb
                                 onChange={(e) => setData('assigned_to_id', e.target.value ? Number(e.target.value) : '')}
                             >
                                 <option value="">Unassigned</option>
-                                {users
-                                    .filter((u) => u.role !== 'client')
-                                    .map((u) => (
-                                        <option key={u.id} value={u.id}>
-                                            {u.name}
-                                        </option>
-                                    ))}
-                            </select>
-                            <InputError message={errors.assigned_to_id} className="mt-1" />
-                        </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <InputLabel htmlFor="requester_id" value="Requester" />
-                            <select
-                                id="requester_id"
-                                className="form-control"
-                                value={data.requester_id}
-                                onChange={(e) => setData('requester_id', e.target.value ? Number(e.target.value) : '')}
-                            >
-                                <option value="">Me</option>
                                 {users.map((u) => (
                                     <option key={u.id} value={u.id}>
-                                        {u.name} {u.role === 'client' ? '(client)' : ''}
+                                        {u.name}
                                     </option>
                                 ))}
                             </select>
-                            <InputError message={errors.requester_id} className="mt-1" />
+                            <InputError message={errors.assigned_to_id} className="mt-1" />
                         </div>
 
                         <div className="form-group">
@@ -238,57 +206,16 @@ export default function TaskForm({ mode, task, websites, users, tags, defaultWeb
                         </div>
                     </div>
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <InputLabel htmlFor="estimated_minutes" value="Estimated Time (minutes)" />
-                            <TextInput
-                                id="estimated_minutes"
-                                type="number"
-                                min="0"
-                                value={data.estimated_minutes}
-                                onChange={(e) => setData('estimated_minutes', e.target.value ? Number(e.target.value) : '')}
-                            />
-                            <InputError message={errors.estimated_minutes} className="mt-1" />
-                        </div>
-
-                        <div className="form-group">
-                            <InputLabel htmlFor="browser" value="Browser" />
-                            <TextInput
-                                id="browser"
-                                value={data.browser}
-                                onChange={(e) => setData('browser', e.target.value)}
-                                placeholder="Chrome, Safari, ..."
-                            />
-                        </div>
-                    </div>
-
                     <div className="form-group">
-                        <InputLabel htmlFor="device" value="Device" />
+                        <InputLabel htmlFor="estimated_minutes" value="Estimated Time (minutes)" />
                         <TextInput
-                            id="device"
-                            value={data.device}
-                            onChange={(e) => setData('device', e.target.value)}
-                            placeholder="Desktop, Mobile, Tablet"
+                            id="estimated_minutes"
+                            type="number"
+                            min="0"
+                            value={data.estimated_minutes}
+                            onChange={(e) => setData('estimated_minutes', e.target.value ? Number(e.target.value) : '')}
                         />
-                    </div>
-
-                    <div className="form-group">
-                        <InputLabel value="Tags" />
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
-                            {tags.map((tag) => {
-                                const selected = data.tag_ids.includes(tag.id);
-                                return (
-                                    <button
-                                        type="button"
-                                        key={tag.id}
-                                        onClick={() => toggleTag(tag.id)}
-                                        className={selected ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm'}
-                                    >
-                                        {tag.name}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                        <InputError message={errors.estimated_minutes} className="mt-1" />
                     </div>
                 </div>
             </div>
@@ -466,28 +393,15 @@ export default function TaskForm({ mode, task, websites, users, tags, defaultWeb
             )}
 
             <div className="card">
-                <div className="card-header">
-                    <div className="card-title">Notes</div>
-                </div>
                 <div className="card-body">
-                    <div className="form-group">
-                        <InputLabel htmlFor="internal_notes" value="Internal Notes (staff only)" />
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                        <InputLabel htmlFor="internal_notes" value="Notes" />
                         <textarea
                             id="internal_notes"
                             rows={3}
                             className="form-control"
                             value={data.internal_notes}
                             onChange={(e) => setData('internal_notes', e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <InputLabel htmlFor="client_notes" value="Client-Visible Notes" />
-                        <textarea
-                            id="client_notes"
-                            rows={3}
-                            className="form-control"
-                            value={data.client_notes}
-                            onChange={(e) => setData('client_notes', e.target.value)}
                         />
                     </div>
                 </div>

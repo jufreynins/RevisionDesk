@@ -74,19 +74,4 @@ class WebsiteCredentialTest extends TestCase
 
         $this->assertTrue($developer->can('view', $credential));
     }
-
-    public function test_client_can_never_view_credentials(): void
-    {
-        $client = User::factory()->client()->create();
-        $website = Website::factory()->create();
-
-        $credential = WebsiteCredential::create([
-            'website_id' => $website->id,
-            'label' => 'WP Admin',
-            'username' => 'admin',
-            'password' => 'secret',
-        ]);
-
-        $this->assertFalse($client->can('view', $credential));
-    }
 }
