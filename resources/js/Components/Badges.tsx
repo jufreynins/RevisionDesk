@@ -7,69 +7,82 @@ import {
     CheckCircle2,
     CircleDot,
     Clock,
+    LucideIcon,
     Minus,
     Pause,
     RotateCcw,
     ShieldAlert,
     XCircle,
 } from 'lucide-react';
-import { ComponentType } from 'react';
 
-const PRIORITY_CONFIG: Record<
-    TaskPriority,
-    { label: string; classes: string; icon: ComponentType<{ className?: string }> }
-> = {
-    low: { label: 'Low', classes: 'bg-zinc-100 text-zinc-600 ring-zinc-200', icon: ArrowDown },
-    normal: { label: 'Normal', classes: 'bg-blue-50 text-blue-700 ring-blue-200', icon: Minus },
-    high: { label: 'High', classes: 'bg-orange-50 text-orange-700 ring-orange-200', icon: ArrowUp },
-    urgent: { label: 'Urgent', classes: 'bg-red-50 text-red-700 ring-red-200', icon: AlertTriangle },
-    critical: {
-        label: 'Critical',
-        classes: 'bg-red-800 text-white ring-red-900',
-        icon: AlertOctagon,
-    },
+type Tone = 'muted' | 'blue' | 'yellow' | 'green' | 'red' | 'red-solid';
+
+const TONE_STYLES: Record<Tone, { color: string; background?: string }> = {
+    muted: { color: 'var(--text-muted)', background: 'var(--bg-surface-secondary, var(--surface-2))' },
+    blue: { color: 'var(--blue)', background: 'var(--blue-lt)' },
+    yellow: { color: '#9a6700', background: 'var(--yellow-lt)' },
+    green: { color: 'var(--green)', background: 'var(--green-lt)' },
+    red: { color: 'var(--red)', background: 'var(--red-lt)' },
+    'red-solid': { color: '#fff', background: 'var(--red)' },
 };
 
-export function PriorityBadge({ priority }: { priority: TaskPriority }) {
-    const config = PRIORITY_CONFIG[priority];
-    const Icon = config.icon;
+function Chip({ tone, icon: Icon, label }: { tone: Tone; icon: LucideIcon; label: string }) {
+    const style = TONE_STYLES[tone];
 
     return (
         <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${config.classes}`}
+            style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                borderRadius: 4,
+                padding: '2px 8px',
+                fontSize: 11.5,
+                fontWeight: 600,
+                whiteSpace: 'nowrap',
+                color: style.color,
+                background: style.background,
+            }}
         >
-            <Icon className="h-3.5 w-3.5" />
-            {config.label}
+            <Icon width={12} height={12} strokeWidth={2} />
+            {label}
         </span>
     );
 }
 
-const STATUS_CONFIG: Record<
-    TaskStatus,
-    { label: string; classes: string; icon: ComponentType<{ className?: string }> }
-> = {
-    new: { label: 'New', classes: 'bg-zinc-100 text-zinc-700 ring-zinc-200', icon: CircleDot },
-    assigned: { label: 'Assigned', classes: 'bg-indigo-50 text-indigo-700 ring-indigo-200', icon: CircleDot },
-    in_progress: { label: 'In Progress', classes: 'bg-blue-50 text-blue-700 ring-blue-200', icon: Clock },
-    waiting_for_client: {
-        label: 'Waiting for Client',
-        classes: 'bg-amber-50 text-amber-700 ring-amber-200',
-        icon: Pause,
-    },
-    blocked: { label: 'Blocked', classes: 'bg-red-50 text-red-700 ring-red-200', icon: ShieldAlert },
-    ready_for_review: {
-        label: 'Ready for Review',
-        classes: 'bg-purple-50 text-purple-700 ring-purple-200',
-        icon: AlertTriangle,
-    },
-    revision_needed: {
-        label: 'Revision Needed',
-        classes: 'bg-orange-50 text-orange-700 ring-orange-200',
-        icon: RotateCcw,
-    },
-    approved: { label: 'Approved', classes: 'bg-teal-50 text-teal-700 ring-teal-200', icon: CheckCircle2 },
-    completed: { label: 'Completed', classes: 'bg-emerald-50 text-emerald-700 ring-emerald-200', icon: CheckCircle2 },
-    cancelled: { label: 'Cancelled', classes: 'bg-zinc-100 text-zinc-500 ring-zinc-200', icon: XCircle },
+const PRIORITY_CONFIG: Record<TaskPriority, { label: string; tone: Tone; icon: LucideIcon }> = {
+    low: { label: 'Low', tone: 'muted', icon: ArrowDown },
+    normal: { label: 'Normal', tone: 'blue', icon: Minus },
+    high: { label: 'High', tone: 'yellow', icon: ArrowUp },
+    urgent: { label: 'Urgent', tone: 'red', icon: AlertTriangle },
+    critical: { label: 'Critical', tone: 'red-solid', icon: AlertOctagon },
+};
+
+export function PriorityBadge({ priority }: { priority: TaskPriority }) {
+    const config = PRIORITY_CONFIG[priority];
+    return <Chip tone={config.tone} icon={config.icon} label={config.label} />;
+}
+
+const STATUS_DOT_COLOR: Record<Tone, string> = {
+    muted: 'var(--text-muted)',
+    blue: 'var(--blue)',
+    yellow: 'var(--yellow)',
+    green: 'var(--green)',
+    red: 'var(--red)',
+    'red-solid': 'var(--red)',
+};
+
+const STATUS_CONFIG: Record<TaskStatus, { label: string; tone: Tone; icon: LucideIcon }> = {
+    new: { label: 'New', tone: 'blue', icon: CircleDot },
+    assigned: { label: 'Assigned', tone: 'blue', icon: CircleDot },
+    in_progress: { label: 'In Progress', tone: 'blue', icon: Clock },
+    waiting_for_client: { label: 'Waiting for Client', tone: 'yellow', icon: Pause },
+    ready_for_review: { label: 'Ready for Review', tone: 'yellow', icon: AlertTriangle },
+    revision_needed: { label: 'Revision Needed', tone: 'yellow', icon: RotateCcw },
+    blocked: { label: 'Blocked', tone: 'red', icon: ShieldAlert },
+    approved: { label: 'Approved', tone: 'green', icon: CheckCircle2 },
+    completed: { label: 'Completed', tone: 'green', icon: CheckCircle2 },
+    cancelled: { label: 'Cancelled', tone: 'muted', icon: XCircle },
 };
 
 export function StatusBadge({ status }: { status: TaskStatus }) {
@@ -77,10 +90,18 @@ export function StatusBadge({ status }: { status: TaskStatus }) {
     const Icon = config.icon;
 
     return (
-        <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${config.classes}`}
-        >
-            <Icon className="h-3.5 w-3.5" />
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, color: 'var(--text-primary, #1a1a1a)', whiteSpace: 'nowrap' }}>
+            <span
+                style={{
+                    display: 'inline-flex',
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    flexShrink: 0,
+                    background: STATUS_DOT_COLOR[config.tone],
+                }}
+            />
+            <Icon width={13} height={13} strokeWidth={1.75} style={{ color: STATUS_DOT_COLOR[config.tone] }} />
             {config.label}
         </span>
     );

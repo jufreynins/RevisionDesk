@@ -130,24 +130,35 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
                         Overdue only
                     </label>
 
-                    <select
-                        value={filters.sort ?? 'newest'}
-                        onChange={(e) => applyFilter('sort', e.target.value)}
-                        className="form-control"
-                        style={{ maxWidth: 170, marginLeft: 'auto' }}
+                    <div
+                        style={{
+                            marginLeft: 'auto',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                            paddingLeft: 14,
+                            borderLeft: '1px solid var(--border-color-light, var(--border-color))',
+                        }}
                     >
-                        <option value="newest">Newest</option>
-                        <option value="oldest">Oldest</option>
-                        <option value="priority">Priority</option>
-                        <option value="due_date">Due Date</option>
-                        <option value="updated">Recently Updated</option>
-                    </select>
+                        {activeFilterCount > 0 && (
+                            <button onClick={clearFilters} className="btn btn-outline btn-sm">
+                                <X width={14} height={14} strokeWidth={1.5} /> Clear
+                            </button>
+                        )}
 
-                    {activeFilterCount > 0 && (
-                        <button onClick={clearFilters} className="btn btn-outline btn-sm">
-                            <X width={14} height={14} strokeWidth={1.5} /> Clear
-                        </button>
-                    )}
+                        <select
+                            value={filters.sort ?? 'newest'}
+                            onChange={(e) => applyFilter('sort', e.target.value)}
+                            className="form-control"
+                            style={{ maxWidth: 170 }}
+                        >
+                            <option value="newest">Newest</option>
+                            <option value="oldest">Oldest</option>
+                            <option value="priority">Priority</option>
+                            <option value="due_date">Due Date</option>
+                            <option value="updated">Recently Updated</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -175,19 +186,24 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <td className="cell-mono">{task.ticket_number}</td>
-                                        <td style={{ maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        <td
+                                            className="cell-strong"
+                                            style={{ maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                        >
                                             {task.title}
                                         </td>
-                                        <td>{task.website?.name}</td>
+                                        <td style={{ color: 'var(--text-muted)' }}>{task.website?.name}</td>
                                         <td>
                                             <PriorityBadge priority={task.priority} />
                                         </td>
                                         <td>
                                             <StatusBadge status={task.status} />
                                         </td>
-                                        <td>{task.assigned_to?.name ?? '—'}</td>
-                                        <td>{task.requester?.name ?? '—'}</td>
-                                        <td>{task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}</td>
+                                        <td style={{ color: 'var(--text-muted)' }}>{task.assigned_to?.name ?? '—'}</td>
+                                        <td style={{ color: 'var(--text-muted)' }}>{task.requester?.name ?? '—'}</td>
+                                        <td style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>
+                                            {task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
