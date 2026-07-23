@@ -225,7 +225,7 @@ export default function Dashboard({
                 </div>
             </div>
 
-            <div className="row col-3">
+            <div className="row col-3" style={{ alignItems: 'start' }}>
                 <div className="card">
                     <div className="card-header">
                         <div className="card-title">Tasks by Status</div>
