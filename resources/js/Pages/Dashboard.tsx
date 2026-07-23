@@ -64,6 +64,15 @@ function initials(name: string): string {
         .toUpperCase();
 }
 
+const STAT_COLOR_VARS: Record<string, string> = {
+    teal: 'var(--primary)',
+    blue: 'var(--blue)',
+    red: 'var(--red)',
+    yellow: 'var(--yellow)',
+    purple: 'var(--purple)',
+    green: 'var(--green)',
+};
+
 const STAT_CARDS = (stats: DashboardProps['stats']) => [
     { label: 'Open Tasks', value: stats.totalOpenTasks, icon: ListTodo, color: 'teal' },
     { label: 'My Tasks', value: stats.myTasksCount, icon: Users, color: 'blue' },
@@ -130,7 +139,11 @@ export default function Dashboard({
                     {STAT_CARDS(stats)
                         .slice(0, 3)
                         .map((card) => (
-                            <div className="card" key={card.label}>
+                            <div
+                                className="card"
+                                key={card.label}
+                                style={{ borderTop: `3px solid ${STAT_COLOR_VARS[card.color]}` }}
+                            >
                                 <div className="stat">
                                     <div className={`stat-icon ${card.color}`}>
                                         <card.icon width={22} height={22} strokeWidth={1.5} />
@@ -150,7 +163,11 @@ export default function Dashboard({
                     {STAT_CARDS(stats)
                         .slice(3)
                         .map((card) => (
-                            <div className="card" key={card.label}>
+                            <div
+                                className="card"
+                                key={card.label}
+                                style={{ borderTop: `3px solid ${STAT_COLOR_VARS[card.color]}` }}
+                            >
                                 <div className="stat">
                                     <div className={`stat-icon ${card.color}`}>
                                         <card.icon width={22} height={22} strokeWidth={1.5} />
