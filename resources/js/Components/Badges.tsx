@@ -111,6 +111,10 @@ export const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = Object.ent
     ([value, { label }]) => ({ value: value as TaskStatus, label }),
 );
 
+export const STATUS_CHART_COLOR: Record<TaskStatus, string> = Object.fromEntries(
+    Object.entries(STATUS_CONFIG).map(([status, config]) => [status, STATUS_DOT_COLOR[config.tone]]),
+) as Record<TaskStatus, string>;
+
 export const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = Object.entries(PRIORITY_CONFIG).map(
     ([value, { label }]) => ({ value: value as TaskPriority, label }),
 );

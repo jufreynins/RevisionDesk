@@ -1,4 +1,4 @@
-import { PriorityBadge } from '@/Components/Badges';
+import { PriorityBadge, STATUS_CHART_COLOR, STATUS_OPTIONS } from '@/Components/Badges';
 import AuthenticatedLayout, { PageHeader } from '@/Layouts/AuthenticatedLayout';
 import { consumeAutoStart } from '@/tour/tourStore';
 import { useTour } from '@/tour/useTour';
@@ -16,6 +16,7 @@ import {
     Users,
 } from 'lucide-react';
 import { useEffect } from 'react';
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 interface DashboardProps {
     stats: {
@@ -73,6 +74,18 @@ const STAT_COLOR_VARS: Record<string, string> = {
     green: 'var(--green)',
 };
 
+const STATUS_LABELS: Record<string, string> = Object.fromEntries(STATUS_OPTIONS.map((o) => [o.value, o.label]));
+const STATUS_ORDER = STATUS_OPTIONS.map((o) => o.value);
+
+const CHART_TOOLTIP_STYLE = {
+    background: 'var(--bg-surface)',
+    border: '1px solid var(--border-color)',
+    borderRadius: 6,
+    fontSize: 12,
+};
+const CHART_TICK_STYLE = { fontSize: 11, fill: 'var(--text-muted)' };
+const CHART_CATEGORY_TICK_STYLE = { fontSize: 11, fill: 'var(--text-secondary)' };
+
 const STAT_CARDS = (stats: DashboardProps['stats']) => [
     { label: 'Open Tasks', value: stats.totalOpenTasks, icon: ListTodo, color: 'teal' },
     { label: 'My Tasks', value: stats.myTasksCount, icon: Users, color: 'blue' },
@@ -102,6 +115,16 @@ export default function Dashboard({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const statusData = STATUS_ORDER.filter((status) => tasksByStatus[status]).map((status) => ({
+        status,
+        label: STATUS_LABELS[status],
+        total: tasksByStatus[status],
+    }));
+
+    const websiteData = Object.entries(tasksByWebsite)
+        .map(([name, total]) => ({ name, total }))
+        .sort((a, b) => b.total - a.total);
 
     return (
         <AuthenticatedLayout
@@ -247,15 +270,24 @@ export default function Dashboard({
                     <div className="card-header">
                         <div className="card-title">Tasks by Status</div>
                     </div>
-                    <div className="card-body" style={{ padding: '8px 16px' }}>
-                        {Object.entries(tasksByStatus).map(([status, count]) => (
-                            <div className="toggle-row" key={status}>
-                                <div className="label" style={{ textTransform: 'capitalize' }}>
-                                    {status.replace(/_/g, ' ')}
-                                </div>
-                                <strong>{count}</strong>
-                            </div>
-                        ))}
+                    <div className="card-body" style={{ height: 260 }}>
+                        {statusData.length === 0 ? (
+                            <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>No tasks yet.</p>
+                        ) : (
+                            <ResponsiveContainer>
+                                <BarChart data={statusData} layout="vertical" margin={{ left: 16, right: 16 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" horizontal={false} />
+                                    <XAxis type="number" allowDecimals={false} tick={CHART_TICK_STYLE} />
+                                    <YAxis type="category" dataKey="label" width={130} tick={CHART_CATEGORY_TICK_STYLE} />
+                                    <Tooltip cursor={{ fill: 'var(--bg-surface-secondary)' }} contentStyle={CHART_TOOLTIP_STYLE} />
+                                    <Bar dataKey="total" name="Tasks" radius={[0, 4, 4, 0]}>
+                                        {statusData.map((entry) => (
+                                            <Cell key={entry.status} fill={STATUS_CHART_COLOR[entry.status]} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
@@ -263,13 +295,20 @@ export default function Dashboard({
                     <div className="card-header">
                         <div className="card-title">Open Tasks by Website</div>
                     </div>
-                    <div className="card-body" style={{ padding: '8px 16px' }}>
-                        {Object.entries(tasksByWebsite).map(([name, count]) => (
-                            <div className="toggle-row" key={name}>
-                                <div className="label">{name}</div>
-                                <strong>{count}</strong>
-                            </div>
-                        ))}
+                    <div className="card-body" style={{ height: 260 }}>
+                        {websiteData.length === 0 ? (
+                            <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>No open tasks yet.</p>
+                        ) : (
+                            <ResponsiveContainer>
+                                <BarChart data={websiteData} layout="vertical" margin={{ left: 16, right: 16 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" horizontal={false} />
+                                    <XAxis type="number" allowDecimals={false} tick={CHART_TICK_STYLE} />
+                                    <YAxis type="category" dataKey="name" width={130} tick={CHART_CATEGORY_TICK_STYLE} />
+                                    <Tooltip cursor={{ fill: 'var(--bg-surface-secondary)' }} contentStyle={CHART_TOOLTIP_STYLE} />
+                                    <Bar dataKey="total" name="Open Tasks" fill="var(--primary)" radius={[0, 4, 4, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
