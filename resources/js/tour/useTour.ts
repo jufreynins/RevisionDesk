@@ -11,7 +11,13 @@ export function useTour(ctx: { isAdmin: boolean; canManage: boolean }) {
     const state = useSyncExternalStore(subscribeTour, getTourState);
 
     const segments = useMemo(
-        () => TOUR_SEGMENTS.filter((segment) => !segment.visible || segment.visible(ctx)),
+        () =>
+            TOUR_SEGMENTS.filter((segment) => !segment.visible || segment.visible(ctx))
+                .map((segment) => ({
+                    ...segment,
+                    steps: segment.steps.filter((step) => !step.visible || step.visible(ctx)),
+                }))
+                .filter((segment) => segment.steps.length > 0),
         [ctx.isAdmin, ctx.canManage],
     );
 

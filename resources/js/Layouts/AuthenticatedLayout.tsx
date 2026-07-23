@@ -154,18 +154,20 @@ export default function AuthenticatedLayout({
                 </div>
 
                 <nav className="sidebar-nav" data-tour="sidebar-nav">
-                    <div className="nav-group">
-                        <Link
-                            href={route('tasks.create')}
-                            className="btn btn-primary"
-                            style={{ margin: '0 16px 14px', display: 'flex', justifyContent: 'center' }}
-                            onClick={() => setSidebarOpen(false)}
-                            data-tour="add-task-btn"
-                        >
-                            <Plus width={16} height={16} />
-                            Add New Task
-                        </Link>
-                    </div>
+                    {canManage && (
+                        <div className="nav-group">
+                            <Link
+                                href={route('tasks.create')}
+                                className="btn btn-primary"
+                                style={{ margin: '0 16px 14px', display: 'flex', justifyContent: 'center' }}
+                                onClick={() => setSidebarOpen(false)}
+                                data-tour="add-task-btn"
+                            >
+                                <Plus width={16} height={16} />
+                                Add New Task
+                            </Link>
+                        </div>
+                    )}
 
                     {navGroups.map((group) => {
                         const visibleItems = group.items.filter((item) => item.show);

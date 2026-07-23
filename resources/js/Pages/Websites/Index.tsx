@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Paginated, Website } from '@/types/models';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Globe, Plus, Search } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
@@ -27,6 +27,8 @@ interface WebsitesIndexProps {
 }
 
 export default function Index({ websites, filters }: PageProps<WebsitesIndexProps>) {
+    const { auth } = usePage<PageProps>().props;
+    const canManage = auth.user.role === 'administrator' || auth.user.role === 'project_manager';
     const [search, setSearch] = useState(filters.search ?? '');
 
     function submitSearch(e: FormEvent) {
@@ -46,12 +48,14 @@ export default function Index({ websites, filters }: PageProps<WebsitesIndexProp
                         <div className="page-pretitle">Client Work</div>
                         <h1 className="page-title">Websites</h1>
                     </div>
-                    <div className="page-actions">
-                        <Link href={route('websites.create')} className="btn btn-primary" data-tour="website-add-btn">
-                            <Plus width={16} height={16} strokeWidth={1.5} />
-                            Add Website
-                        </Link>
-                    </div>
+                    {canManage && (
+                        <div className="page-actions">
+                            <Link href={route('websites.create')} className="btn btn-primary" data-tour="website-add-btn">
+                                <Plus width={16} height={16} strokeWidth={1.5} />
+                                Add Website
+                            </Link>
+                        </div>
+                    )}
                 </>
             }
         >

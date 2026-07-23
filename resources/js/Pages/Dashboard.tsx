@@ -107,14 +107,18 @@ export default function Dashboard({
                             <Sparkles width={16} height={16} strokeWidth={1.5} />
                             Take a Tour
                         </button>
-                        <Link href={route('websites.create')} className="btn btn-outline">
-                            <Plus width={16} height={16} strokeWidth={1.5} />
-                            Add Website
-                        </Link>
-                        <Link href={route('tasks.create')} className="btn btn-primary">
-                            <Plus width={16} height={16} strokeWidth={1.5} />
-                            Add New Task
-                        </Link>
+                        {canManage && (
+                            <>
+                                <Link href={route('websites.create')} className="btn btn-outline">
+                                    <Plus width={16} height={16} strokeWidth={1.5} />
+                                    Add Website
+                                </Link>
+                                <Link href={route('tasks.create')} className="btn btn-primary">
+                                    <Plus width={16} height={16} strokeWidth={1.5} />
+                                    Add New Task
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </>
             }

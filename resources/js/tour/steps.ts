@@ -4,6 +4,8 @@ export interface TourStep {
     title: string;
     content: string;
     placement?: 'top' | 'bottom' | 'left' | 'right';
+    /** Only include this step if the current user passes this check. */
+    visible?: (ctx: { isAdmin: boolean; canManage: boolean }) => boolean;
 }
 
 export interface TourSegment {
@@ -31,6 +33,7 @@ export const TOUR_SEGMENTS: TourSegment[] = [
                 title: 'Add New Task',
                 content: 'Gamitin ang buttong ito para gumawa ng bagong task o revision ticket kahit saan ka sa app.',
                 placement: 'right',
+                visible: ({ canManage }) => canManage,
             },
             {
                 target: 'dashboard-stats',
@@ -114,6 +117,7 @@ export const TOUR_SEGMENTS: TourSegment[] = [
                 title: 'Magdagdag ng Website',
                 content: 'Dito mo maidadagdag ang bagong website na kailangang i-manage ng team.',
                 placement: 'left',
+                visible: ({ canManage }) => canManage,
             },
             {
                 target: 'website-list',
