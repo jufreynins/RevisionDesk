@@ -1,0 +1,1 @@
+import{j as s}from"./app-C0ijw18n.js";function m({className:r="",disabled:t,children:n,...o}){return s.jsx("button",{...o,className:`btn btn-primary ${t?"disabled":""} ${r}`,disabled:t,children:n})}export{m as P};

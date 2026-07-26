@@ -79,6 +79,14 @@ const PRIORITY_DESC: Record<TaskPriority, string> = {
     critical: 'Drop everything',
 };
 
+const TEST_ACCOUNTS: { role: UserRole; name: string; email: string }[] = [
+    { role: 'administrator', name: 'Alex Rivera', email: 'admin@revisiondesk.test' },
+    { role: 'project_manager', name: 'Jordan Cruz', email: 'pm@revisiondesk.test' },
+    { role: 'developer', name: 'Sam Dela Cruz', email: 'developer1@revisiondesk.test' },
+    { role: 'developer', name: 'Riley Santos', email: 'developer2@revisiondesk.test' },
+    { role: 'developer', name: 'Casey Reyes', email: 'developer3@revisiondesk.test' },
+];
+
 const FEATURES: { name: string; desc: string; who: string }[] = [
     { name: 'Dashboard', desc: 'Open tasks, urgent items, what’s overdue, and recent activity at a glance.', who: 'Everyone' },
     { name: 'Task Board', desc: 'A kanban view of every task by status — drag between columns to update.', who: 'Everyone' },
@@ -179,6 +187,37 @@ export default function Documentation() {
                         </div>
                     ))}
                 </div>
+            </Section>
+
+            <Section title="Test Accounts" subtitle="Seeded logins for trying the app on a local or staging database">
+                <div className="table-responsive">
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Password</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {TEST_ACCOUNTS.map((account) => (
+                                <tr key={account.email}>
+                                    <td>
+                                        <span className={`badge ${ROLE_BADGE_CLASS[account.role]}`}>{ROLE_LABEL[account.role]}</span>
+                                    </td>
+                                    <td>{account.name}</td>
+                                    <td className="cell-mono">{account.email}</td>
+                                    <td className="cell-mono">password</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <p style={{ marginTop: 12, fontSize: 12, color: 'var(--text-muted)' }}>
+                    Created by <code style={{ fontFamily: 'var(--font-mono)' }}>php artisan migrate:fresh --seed</code>. Only run that against a local
+                    or staging database — it wipes whatever is already there. Never use it against production.
+                </p>
             </Section>
 
             <Section title="The Task Lifecycle" subtitle="Every task follows this path">
