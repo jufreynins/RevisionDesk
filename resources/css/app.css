@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.card:hover {
+    box-shadow: var(--shadow-card);
+}
+
 .tour-spotlight {
     pointer-events: none;
     z-index: 10000;

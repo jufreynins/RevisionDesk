@@ -6,11 +6,15 @@ import { PageProps } from '@/types';
 import { Task, TaskActivity } from '@/types/models';
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
+    Activity,
     AlertTriangle,
     CalendarClock,
     CheckCircle2,
     Clock,
+    Globe,
     ListTodo,
+    LucideIcon,
+    PieChart,
     Plus,
     Sparkles,
     Users,
@@ -86,6 +90,40 @@ const CHART_TOOLTIP_STYLE = {
 const CHART_TICK_STYLE = { fontSize: 11, fill: 'var(--text-muted)' };
 const CHART_CATEGORY_TICK_STYLE = { fontSize: 11, fill: 'var(--text-secondary)' };
 
+const AVATAR_PALETTE = [
+    'linear-gradient(135deg,var(--primary),var(--primary-dk))',
+    'linear-gradient(135deg,var(--blue),#0554a3)',
+    'linear-gradient(135deg,var(--purple),#7e2d94)',
+    'linear-gradient(135deg,var(--orange),#c25405)',
+    'linear-gradient(135deg,var(--cyan),#0f7688)',
+];
+
+function SectionHeader({ icon: Icon, title, subtitle }: { icon: LucideIcon; title: string; subtitle?: string }) {
+    return (
+        <div className="card-header">
+            <div>
+                <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                    <Icon width={15} height={15} strokeWidth={1.75} style={{ color: 'var(--text-muted)' }} />
+                    {title}
+                </div>
+                {subtitle && <div className="card-subtitle">{subtitle}</div>}
+            </div>
+        </div>
+    );
+}
+
+function EmptyState({ icon: Icon, title, text }: { icon: LucideIcon; title: string; text: string }) {
+    return (
+        <div className="empty-state">
+            <div className="empty-state-icon">
+                <Icon width={22} height={22} strokeWidth={1.5} />
+            </div>
+            <div className="empty-state-title">{title}</div>
+            <div className="empty-state-text">{text}</div>
+        </div>
+    );
+}
+
 const STAT_CARDS = (stats: DashboardProps['stats']) => [
     { label: 'Open Tasks', value: stats.totalOpenTasks, icon: ListTodo, color: 'teal' },
     { label: 'My Tasks', value: stats.myTasksCount, icon: Users, color: 'blue' },
@@ -125,6 +163,9 @@ export default function Dashboard({
     const websiteData = Object.entries(tasksByWebsite)
         .map(([name, total]) => ({ name, total }))
         .sort((a, b) => b.total - a.total);
+
+    const statusTotal = statusData.reduce((sum, s) => sum + s.total, 0);
+    const maxWorkload = Math.max(1, ...(workloadOverview ?? []).map((m) => m.active_tasks_count));
 
     return (
         <AuthenticatedLayout
@@ -209,12 +250,18 @@ export default function Dashboard({
 
             <div className="row col-8-4">
                 <div className="card" data-tour="dashboard-due">
-                    <div className="card-header">
-                        <div className="card-title">Upcoming Due Dates</div>
-                    </div>
-                    <div className="card-body" style={{ padding: '8px 16px' }}>
+                    <SectionHeader
+                        icon={CalendarClock}
+                        title="Upcoming Due Dates"
+                        subtitle={upcomingDueDates.length > 0 ? `${upcomingDueDates.length} due in the next 7 days` : undefined}
+                    />
+                    <div className="card-body" style={{ padding: upcomingDueDates.length === 0 ? 0 : '8px 16px' }}>
                         {upcomingDueDates.length === 0 ? (
-                            <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Nothing due in the next 7 days.</p>
+                            <EmptyState
+                                icon={CheckCircle2}
+                                title="Nothing due soon"
+                                text="No tasks are due in the next 7 days."
+                            />
                         ) : (
                             <ul className="activity-list">
                                 {upcomingDueDates.map((task) => (
@@ -239,12 +286,14 @@ export default function Dashboard({
                 </div>
 
                 <div className="card">
-                    <div className="card-header">
-                        <div className="card-title">My Urgent Tasks</div>
-                    </div>
-                    <div className="card-body" style={{ padding: '8px 16px' }}>
+                    <SectionHeader
+                        icon={AlertTriangle}
+                        title="My Urgent Tasks"
+                        subtitle={myUrgentTasks.length > 0 ? `${myUrgentTasks.length} need your attention` : undefined}
+                    />
+                    <div className="card-body" style={{ padding: myUrgentTasks.length === 0 ? 0 : '8px 16px' }}>
                         {myUrgentTasks.length === 0 ? (
-                            <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>No urgent tasks assigned to you.</p>
+                            <EmptyState icon={CheckCircle2} title="All caught up" text="No urgent tasks are assigned to you right now." />
                         ) : (
                             <ul className="activity-list">
                                 {myUrgentTasks.map((task) => (
@@ -267,12 +316,14 @@ export default function Dashboard({
 
             <div className="row col-3" style={{ alignItems: 'start' }}>
                 <div className="card">
-                    <div className="card-header">
-                        <div className="card-title">Tasks by Status</div>
-                    </div>
+                    <SectionHeader
+                        icon={PieChart}
+                        title="Tasks by Status"
+                        subtitle={statusTotal > 0 ? `${statusTotal} open task${statusTotal === 1 ? '' : 's'}` : undefined}
+                    />
                     <div className="card-body" style={{ height: 260 }}>
                         {statusData.length === 0 ? (
-                            <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>No tasks yet.</p>
+                            <EmptyState icon={PieChart} title="No tasks yet" text="Tasks will appear here once they're created." />
                         ) : (
                             <ResponsiveContainer>
                                 <BarChart data={statusData} layout="vertical" margin={{ left: 16, right: 16 }}>
@@ -292,12 +343,14 @@ export default function Dashboard({
                 </div>
 
                 <div className="card">
-                    <div className="card-header">
-                        <div className="card-title">Open Tasks by Website</div>
-                    </div>
+                    <SectionHeader
+                        icon={Globe}
+                        title="Open Tasks by Website"
+                        subtitle={websiteData.length > 0 ? `Across ${websiteData.length} website${websiteData.length === 1 ? '' : 's'}` : undefined}
+                    />
                     <div className="card-body" style={{ height: 260 }}>
                         {websiteData.length === 0 ? (
-                            <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>No open tasks yet.</p>
+                            <EmptyState icon={Globe} title="No open tasks" text="Open tasks by website will show up here." />
                         ) : (
                             <ResponsiveContainer>
                                 <BarChart data={websiteData} layout="vertical" margin={{ left: 16, right: 16 }}>
@@ -313,12 +366,10 @@ export default function Dashboard({
                 </div>
 
                 <div className="card">
-                    <div className="card-header">
-                        <div className="card-title">Recent Activity</div>
-                    </div>
-                    <div className="card-body" style={{ padding: '8px 16px' }}>
+                    <SectionHeader icon={Activity} title="Recent Activity" />
+                    <div className="card-body" style={{ padding: recentActivity.length === 0 ? 0 : '8px 16px' }}>
                         {recentActivity.length === 0 ? (
-                            <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>No recent activity.</p>
+                            <EmptyState icon={Activity} title="No activity yet" text="Task updates will show up here as work happens." />
                         ) : (
                             <ul className="activity-list">
                                 {recentActivity.map((activity) => (
@@ -354,15 +405,41 @@ export default function Dashboard({
             {workloadOverview && (
                 <div className="row col-3">
                     <div className="card" style={{ gridColumn: '1 / -1' }}>
-                        <div className="card-header">
-                            <div className="card-title">Team Workload</div>
-                        </div>
+                        <SectionHeader icon={Users} title="Team Workload" subtitle="Active tasks per team member" />
                         <div className="card-body">
                             <div className="row col-3" style={{ marginBottom: 0 }}>
-                                {workloadOverview.map((member) => (
-                                    <div className="toggle-row" key={member.id}>
-                                        <div className="label">{member.name}</div>
-                                        <strong>{member.active_tasks_count} active</strong>
+                                {workloadOverview.map((member, index) => (
+                                    <div key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
+                                        <div
+                                            className="avatar"
+                                            style={{ background: AVATAR_PALETTE[index % AVATAR_PALETTE.length] }}
+                                        >
+                                            {initials(member.name)}
+                                        </div>
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    fontSize: 13,
+                                                    marginBottom: 4,
+                                                }}
+                                            >
+                                                <span style={{ fontWeight: 500 }}>{member.name}</span>
+                                                <span style={{ color: 'var(--text-muted)' }}>
+                                                    {member.active_tasks_count} active
+                                                </span>
+                                            </div>
+                                            <div className="progress-thin">
+                                                <div
+                                                    className="bar"
+                                                    style={{
+                                                        width: `${(member.active_tasks_count / maxWorkload) * 100}%`,
+                                                        background: 'var(--primary)',
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
