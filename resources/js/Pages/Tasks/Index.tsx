@@ -1,6 +1,7 @@
 import { PriorityBadge, STATUS_OPTIONS, StatusBadge } from '@/Components/Badges';
 import EmptyState from '@/Components/EmptyState';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { formatMinutes } from '@/lib/formatMinutes';
 import { PageProps } from '@/types';
 import { Paginated, Task, User, Website } from '@/types/models';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -187,6 +188,7 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
                                             <th>Status</th>
                                             <th>Assigned</th>
                                             <th>Due</th>
+                                            <th>Time</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -214,6 +216,9 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
                                                 <td style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>
                                                     {task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}
                                                 </td>
+                                                <td style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>
+                                                    {formatMinutes(task.time_entries_sum_minutes_spent)}
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -235,6 +240,7 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
                                             <StatusBadge status={task.status} />
                                             <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                                                 {task.due_date ? new Date(task.due_date).toLocaleDateString() : ''}
+                                                {task.time_entries_sum_minutes_spent ? ` · ${formatMinutes(task.time_entries_sum_minutes_spent)}` : ''}
                                             </span>
                                         </div>
                                     </Link>

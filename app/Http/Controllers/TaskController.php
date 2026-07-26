@@ -32,7 +32,9 @@ class TaskController extends Controller
         $user = $request->user();
         $viewMode = $request->input('view', 'mine');
 
-        $query = Task::query()->with(['website:id,name', 'assignedTo:id,name']);
+        $query = Task::query()
+            ->with(['website:id,name', 'assignedTo:id,name'])
+            ->withSum('timeEntries', 'minutes_spent');
 
         $this->scopeToVisibleTasks($query, $user);
 

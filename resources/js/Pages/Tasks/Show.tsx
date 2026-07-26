@@ -1,12 +1,12 @@
 import { PriorityBadge, StatusBadge } from '@/Components/Badges';
 import HtmlContent from '@/Components/HtmlContent';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { formatMinutes } from '@/lib/formatMinutes';
 import ActivityTimeline from '@/Pages/Tasks/Partials/ActivityTimeline';
 import AttachmentsPanel from '@/Pages/Tasks/Partials/AttachmentsPanel';
 import ChecklistPanel from '@/Pages/Tasks/Partials/ChecklistPanel';
 import CommentsPanel from '@/Pages/Tasks/Partials/CommentsPanel';
 import StatusActions from '@/Pages/Tasks/Partials/StatusActions';
-import TimeTrackingPanel from '@/Pages/Tasks/Partials/TimeTrackingPanel';
 import { PageProps } from '@/types';
 import { Task, TaskComment, TaskPermissions } from '@/types/models';
 import { Head } from '@inertiajs/react';
@@ -20,7 +20,7 @@ interface ShowProps {
     permissions: TaskPermissions;
 }
 
-export default function Show({ task, comments, permissions }: PageProps<ShowProps>) {
+export default function Show({ task, comments, totalMinutesSpent, permissions }: PageProps<ShowProps>) {
     const openUrl = task.page_url || task.website?.url;
 
     return (
@@ -149,17 +149,19 @@ export default function Show({ task, comments, permissions }: PageProps<ShowProp
                                     <dt style={{ color: 'var(--text-muted)' }}>Created</dt>
                                     <dd>{new Date(task.created_at).toLocaleDateString()}</dd>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                     <dt style={{ color: 'var(--text-muted)' }}>Due Date</dt>
                                     <dd>{task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}</dd>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <dt style={{ color: 'var(--text-muted)' }}>Time Spent</dt>
+                                    <dd>{formatMinutes(totalMinutesSpent)}</dd>
                                 </div>
                             </dl>
                         </div>
                     </div>
 
                     <ChecklistPanel task={task} canEdit={permissions.canUpdateStatus || permissions.canEdit} />
-
-                    <TimeTrackingPanel task={task} />
                 </div>
             </div>
         </AuthenticatedLayout>
