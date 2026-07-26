@@ -1,5 +1,6 @@
 import Dropdown from '@/Components/Dropdown';
 import FlashToast from '@/Components/FlashToast';
+import FloatingFeatureRequestButton from '@/Components/FloatingFeatureRequestButton';
 import TourOverlay from '@/Components/TourOverlay';
 import { useTour } from '@/tour/useTour';
 import { PageProps } from '@/types';
@@ -13,6 +14,7 @@ import {
     ChevronDown,
     Kanban,
     LayoutDashboard,
+    Lightbulb,
     ListChecks,
     Menu,
     Plus,
@@ -138,6 +140,13 @@ export default function AuthenticatedLayout({
                     active: route().current('documentation.index'),
                     show: user.role === 'administrator',
                 },
+                {
+                    label: 'Feature Requests',
+                    href: route('feature-requests.index'),
+                    icon: Lightbulb,
+                    active: route().current('feature-requests.index'),
+                    show: user.role === 'administrator',
+                },
             ],
         },
     ];
@@ -146,6 +155,7 @@ export default function AuthenticatedLayout({
         <>
             <FlashToast />
             <TourOverlay tour={tour} />
+            <FloatingFeatureRequestButton />
 
             <div
                 className="sidebar-backdrop"

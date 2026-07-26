@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentationController;
+use App\Http\Controllers\FeatureRequestController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
@@ -66,6 +67,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation.index');
+
+    Route::get('/feature-requests', [FeatureRequestController::class, 'index'])->name('feature-requests.index');
+    Route::post('/feature-requests', [FeatureRequestController::class, 'store'])->name('feature-requests.store');
+    Route::patch('/feature-requests/{featureRequest}/status', [FeatureRequestController::class, 'updateStatus'])->name('feature-requests.status.update');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -202,3 +202,17 @@ export interface TaskPermissions {
     canApprove: boolean;
     canReopen: boolean;
 }
+
+export type FeatureRequestType = 'comment' | 'finding';
+export type FeatureRequestStatus = 'new' | 'reviewed';
+
+export interface FeatureRequest {
+    id: number;
+    user_id: number;
+    user?: User;
+    type: FeatureRequestType;
+    message: string;
+    page_url: string | null;
+    status: FeatureRequestStatus;
+    created_at: string;
+}

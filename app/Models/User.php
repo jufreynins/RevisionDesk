@@ -108,4 +108,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(SavedFilter::class);
     }
+
+    public function featureRequests(): HasMany
+    {
+        return $this->hasMany(FeatureRequest::class);
+    }
 }
