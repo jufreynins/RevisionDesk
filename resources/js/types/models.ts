@@ -162,7 +162,6 @@ export interface Task {
     client_deadline: string | null;
     checklist_items?: TaskChecklistItem[];
     time_entries?: TaskTimeEntry[];
-    time_entries_sum_minutes_spent?: number | string | null;
     attachments?: TaskAttachment[];
     activities?: TaskActivity[];
     submitted_for_review_at: string | null;

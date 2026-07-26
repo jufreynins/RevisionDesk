@@ -1,7 +1,6 @@
 import { PriorityBadge, StatusBadge } from '@/Components/Badges';
 import HtmlContent from '@/Components/HtmlContent';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { formatMinutes } from '@/lib/formatMinutes';
 import ActivityTimeline from '@/Pages/Tasks/Partials/ActivityTimeline';
 import AttachmentsPanel from '@/Pages/Tasks/Partials/AttachmentsPanel';
 import ChecklistPanel from '@/Pages/Tasks/Partials/ChecklistPanel';
@@ -20,7 +19,7 @@ interface ShowProps {
     permissions: TaskPermissions;
 }
 
-export default function Show({ task, comments, totalMinutesSpent, permissions }: PageProps<ShowProps>) {
+export default function Show({ task, comments, permissions }: PageProps<ShowProps>) {
     const openUrl = task.page_url || task.website?.url;
 
     return (
@@ -146,16 +145,12 @@ export default function Show({ task, comments, totalMinutesSpent, permissions }:
                                     <dd>{task.assigned_to?.name ?? 'Unassigned'}</dd>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                                    <dt style={{ color: 'var(--text-muted)' }}>Created</dt>
-                                    <dd>{new Date(task.created_at).toLocaleDateString()}</dd>
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                                    <dt style={{ color: 'var(--text-muted)' }}>Due Date</dt>
-                                    <dd>{task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}</dd>
+                                    <dt style={{ color: 'var(--text-muted)' }}>Added</dt>
+                                    <dd>{new Date(task.created_at).toLocaleString()}</dd>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <dt style={{ color: 'var(--text-muted)' }}>Time Spent</dt>
-                                    <dd>{formatMinutes(totalMinutesSpent)}</dd>
+                                    <dt style={{ color: 'var(--text-muted)' }}>Due Date</dt>
+                                    <dd>{task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}</dd>
                                 </div>
                             </dl>
                         </div>
