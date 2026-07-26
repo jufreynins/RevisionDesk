@@ -1,4 +1,4 @@
-import { TaskPriority, TaskStatus } from '@/types/models';
+import { TaskPriority, TaskStatus, UserRole } from '@/types/models';
 import {
     AlertOctagon,
     AlertTriangle,
@@ -118,6 +118,18 @@ export const STATUS_CHART_COLOR: Record<TaskStatus, string> = Object.fromEntries
 export const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = Object.entries(PRIORITY_CONFIG).map(
     ([value, { label }]) => ({ value: value as TaskPriority, label }),
 );
+
+export const ROLE_LABEL: Record<UserRole, string> = {
+    administrator: 'Administrator',
+    project_manager: 'Project Manager',
+    developer: 'Developer',
+};
+
+export const ROLE_BADGE_CLASS: Record<UserRole, string> = {
+    administrator: 'badge-red',
+    project_manager: 'badge-blue',
+    developer: 'badge-teal',
+};
 
 export const PRIORITY_CHART_COLOR: Record<TaskPriority, string> = {
     ...(Object.fromEntries(
