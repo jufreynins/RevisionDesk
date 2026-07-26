@@ -12,8 +12,16 @@ class FeatureRequest extends Model
         'type',
         'message',
         'page_url',
+        'screenshot_path',
         'status',
     ];
+
+    protected $appends = ['screenshot_url'];
+
+    public function getScreenshotUrlAttribute(): ?string
+    {
+        return $this->screenshot_path ? asset('storage/'.$this->screenshot_path) : null;
+    }
 
     public function user(): BelongsTo
     {

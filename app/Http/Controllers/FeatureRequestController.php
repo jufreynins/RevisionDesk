@@ -12,7 +12,7 @@ class FeatureRequestController extends Controller
 {
     public function index(Request $request): Response
     {
-        abort_unless($request->user()->isAdministrator(), 403);
+        abort_unless($request->user()->isSuperAdmin(), 403);
 
         return Inertia::render('FeatureRequests/Index', [
             'requests' => FeatureRequest::with('user:id,name')->latest()->paginate(20),
@@ -25,7 +25,13 @@ class FeatureRequestController extends Controller
             'type' => ['required', 'in:comment,finding'],
             'message' => ['required', 'string', 'max:5000'],
             'page_url' => ['nullable', 'string', 'max:255'],
+            'screenshot' => ['nullable', 'image', 'max:5120'],
         ]);
+
+        if ($request->hasFile('screenshot')) {
+            $data['screenshot_path'] = $request->file('screenshot')->store('feature-requests', 'public');
+        }
+        unset($data['screenshot']);
 
         $request->user()->featureRequests()->create($data);
 
@@ -34,7 +40,7 @@ class FeatureRequestController extends Controller
 
     public function updateStatus(Request $request, FeatureRequest $featureRequest): RedirectResponse
     {
-        abort_unless($request->user()->isAdministrator(), 403);
+        abort_unless($request->user()->isSuperAdmin(), 403);
 
         $data = $request->validate([
             'status' => ['required', 'in:new,reviewed'],

@@ -1,4 +1,4 @@
-import { ROLE_BADGE_CLASS, ROLE_LABEL } from '@/Components/Badges';
+import { ROLE_BADGE_CLASS, ROLE_BADGE_STYLE, ROLE_LABEL } from '@/Components/Badges';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Paginated, User } from '@/types/models';
@@ -96,11 +96,9 @@ export default function Index({ users, filters }: PageProps<TeamIndexProps>) {
                                     <td className="cell-strong">{member.name}</td>
                                     <td>{member.email}</td>
                                     <td>
-                                        {ROLE_BADGE_CLASS[member.role] ? (
-                                            <span className={`badge ${ROLE_BADGE_CLASS[member.role]}`}>{ROLE_LABEL[member.role]}</span>
-                                        ) : (
-                                            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{ROLE_LABEL[member.role]}</span>
-                                        )}
+                                        <span className={`badge ${ROLE_BADGE_CLASS[member.role]}`} style={ROLE_BADGE_STYLE[member.role]}>
+                                            {ROLE_LABEL[member.role]}
+                                        </span>
                                     </td>
                                     <td>{member.active_tasks_count}</td>
                                     <td>

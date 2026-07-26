@@ -145,7 +145,7 @@ export default function AuthenticatedLayout({
                     href: route('feature-requests.index'),
                     icon: Lightbulb,
                     active: route().current('feature-requests.index'),
-                    show: user.role === 'administrator',
+                    show: user.role === 'super_admin',
                 },
             ],
         },

@@ -15,6 +15,8 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
+    public const ROLE_SUPER_ADMIN = 'super_admin';
+
     public const ROLE_ADMINISTRATOR = 'administrator';
 
     public const ROLE_PROJECT_MANAGER = 'project_manager';
@@ -64,9 +66,18 @@ class User extends Authenticatable
         ];
     }
 
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === self::ROLE_SUPER_ADMIN;
+    }
+
+    /**
+     * Super admins hold every administrator permission, plus a few
+     * exclusive to them (see isSuperAdmin()) — so this checks both roles.
+     */
     public function isAdministrator(): bool
     {
-        return $this->role === self::ROLE_ADMINISTRATOR;
+        return in_array($this->role, [self::ROLE_ADMINISTRATOR, self::ROLE_SUPER_ADMIN], true);
     }
 
     public function isProjectManager(): bool

@@ -1,4 +1,4 @@
-import { PriorityBadge, PRIORITY_OPTIONS, ROLE_BADGE_CLASS, ROLE_LABEL, StatusBadge, STATUS_OPTIONS } from '@/Components/Badges';
+import { PriorityBadge, PRIORITY_OPTIONS, ROLE_BADGE_CLASS, ROLE_BADGE_STYLE, ROLE_LABEL, StatusBadge, STATUS_OPTIONS } from '@/Components/Badges';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { TaskPriority, TaskStatus, UserRole } from '@/types/models';
 import { Head } from '@inertiajs/react';
@@ -38,6 +38,11 @@ function StatusChip({ status }: { status: TaskStatus }) {
 }
 
 const ROLE_CAPABILITIES: Record<UserRole, string[]> = {
+    super_admin: [
+        'Everything an Administrator can do',
+        'Sees Feature Requests submitted from the feedback button',
+        'Reserved for the account that owns the system',
+    ],
     administrator: [
         'Everything a Project Manager can do',
         'Add, edit & deactivate team members',
@@ -172,12 +177,14 @@ export default function Documentation() {
                 </p>
             </Section>
 
-            <Section title="Roles" subtitle="Three account types, two ways of working">
-                <div className="row col-3" style={{ marginBottom: 0 }}>
+            <Section title="Roles" subtitle="Four account types, two ways of working">
+                <div className="row col-4" style={{ marginBottom: 0 }}>
                     {(Object.keys(ROLE_LABEL) as UserRole[]).map((role) => (
                         <div key={role} className="card">
                             <div className="card-body">
-                                <span className={`badge ${ROLE_BADGE_CLASS[role]}`}>{ROLE_LABEL[role]}</span>
+                                <span className={`badge ${ROLE_BADGE_CLASS[role]}`} style={ROLE_BADGE_STYLE[role]}>
+                                    {ROLE_LABEL[role]}
+                                </span>
                                 <ul style={{ margin: '10px 0 0', paddingLeft: 18, fontSize: 12.5, color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: 5 }}>
                                     {ROLE_CAPABILITIES[role].map((line) => (
                                         <li key={line}>{line}</li>

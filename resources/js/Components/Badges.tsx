@@ -120,15 +120,23 @@ export const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = Object
 );
 
 export const ROLE_LABEL: Record<UserRole, string> = {
+    super_admin: 'Super Admin',
     administrator: 'Administrator',
     project_manager: 'Project Manager',
     developer: 'Developer',
 };
 
 export const ROLE_BADGE_CLASS: Record<UserRole, string> = {
+    super_admin: '',
     administrator: 'badge-red',
     project_manager: 'badge-blue',
     developer: 'badge-teal',
+};
+
+// badge-purple isn't a predefined utility class, so super_admin's badge
+// gets its color from these CSS variables directly instead.
+export const ROLE_BADGE_STYLE: Partial<Record<UserRole, { background: string; color: string }>> = {
+    super_admin: { background: 'var(--purple-lt)', color: 'var(--purple)' },
 };
 
 export const PRIORITY_CHART_COLOR: Record<TaskPriority, string> = {

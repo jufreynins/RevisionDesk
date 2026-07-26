@@ -1,4 +1,4 @@
-export type UserRole = 'administrator' | 'project_manager' | 'developer';
+export type UserRole = 'super_admin' | 'administrator' | 'project_manager' | 'developer';
 
 export interface User {
     id: number;
@@ -213,6 +213,8 @@ export interface FeatureRequest {
     type: FeatureRequestType;
     message: string;
     page_url: string | null;
+    screenshot_path: string | null;
+    screenshot_url: string | null;
     status: FeatureRequestStatus;
     created_at: string;
 }

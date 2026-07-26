@@ -43,6 +43,7 @@ export default function Index({ requests }: PageProps<FeatureRequestsIndexProps>
                                 <tr>
                                     <th>Type</th>
                                     <th>Message</th>
+                                    <th>Screenshot</th>
                                     <th>Submitted by</th>
                                     <th>Page</th>
                                     <th>Date</th>
@@ -57,6 +58,27 @@ export default function Index({ requests }: PageProps<FeatureRequestsIndexProps>
                                             <TypeBadge type={item.type} />
                                         </td>
                                         <td style={{ maxWidth: 360, whiteSpace: 'pre-line' }}>{item.message}</td>
+                                        <td>
+                                            {item.screenshot_url ? (
+                                                <a href={item.screenshot_url} target="_blank" rel="noopener noreferrer">
+                                                    <img
+                                                        src={item.screenshot_url}
+                                                        alt="Submitted screenshot"
+                                                        style={{
+                                                            width: 56,
+                                                            height: 40,
+                                                            objectFit: 'cover',
+                                                            objectPosition: 'top',
+                                                            borderRadius: 'var(--radius-sm)',
+                                                            border: '1px solid var(--border-color)',
+                                                            display: 'block',
+                                                        }}
+                                                    />
+                                                </a>
+                                            ) : (
+                                                <span style={{ color: 'var(--text-muted)' }}>—</span>
+                                            )}
+                                        </td>
                                         <td style={{ color: 'var(--text-secondary)' }}>{item.user?.name ?? 'Unknown'}</td>
                                         <td className="cell-mono" style={{ color: 'var(--text-muted)', fontSize: 12 }}>
                                             {item.page_url ?? '—'}
