@@ -97,12 +97,12 @@ function SectionHeader({ icon: Icon, title, subtitle }: { icon: LucideIcon; titl
 }
 
 const STAT_CARD_BG: Record<string, string> = {
-    teal: 'var(--primary-lt)',
-    blue: 'var(--blue-lt)',
-    red: 'var(--red-lt)',
-    yellow: 'var(--yellow-lt)',
-    purple: 'var(--purple-lt)',
-    green: 'var(--green-lt)',
+    teal: 'var(--primary)',
+    blue: 'var(--blue)',
+    red: 'var(--red)',
+    yellow: 'var(--yellow)',
+    purple: 'var(--purple)',
+    green: 'var(--green)',
 };
 
 const STAT_CARDS = (stats: DashboardProps['stats']) => [
@@ -186,13 +186,13 @@ export default function Dashboard({
                         .map((card) => (
                             <div className="card" key={card.label} style={{ background: STAT_CARD_BG[card.color] }}>
                                 <div className="stat">
-                                    <div className={`stat-icon ${card.color}`}>
+                                    <div className="stat-icon" style={{ background: 'rgba(255,255,255,0.18)', color: '#fff' }}>
                                         <card.icon width={20} height={20} strokeWidth={1.5} />
                                     </div>
                                     <div className="stat-content">
-                                        <div className="stat-label">{card.label}</div>
+                                        <div className="stat-label" style={{ color: 'rgba(255,255,255,0.85)' }}>{card.label}</div>
                                         <div className="stat-value-row">
-                                            <span className="stat-value">{card.value}</span>
+                                            <span className="stat-value" style={{ color: '#fff' }}>{card.value}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -206,13 +206,13 @@ export default function Dashboard({
                         .map((card) => (
                             <div className="card" key={card.label} style={{ background: STAT_CARD_BG[card.color] }}>
                                 <div className="stat">
-                                    <div className={`stat-icon ${card.color}`}>
+                                    <div className="stat-icon" style={{ background: 'rgba(255,255,255,0.18)', color: '#fff' }}>
                                         <card.icon width={20} height={20} strokeWidth={1.5} />
                                     </div>
                                     <div className="stat-content">
-                                        <div className="stat-label">{card.label}</div>
+                                        <div className="stat-label" style={{ color: 'rgba(255,255,255,0.85)' }}>{card.label}</div>
                                         <div className="stat-value-row">
-                                            <span className="stat-value">{card.value}</span>
+                                            <span className="stat-value" style={{ color: '#fff' }}>{card.value}</span>
                                         </div>
                                     </div>
                                 </div>
