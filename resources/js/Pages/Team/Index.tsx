@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Paginated, User } from '@/types/models';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Plus, Search, UserX } from 'lucide-react';
+import { Pencil, Plus, Search, UserX } from 'lucide-react';
 import { useState } from 'react';
 
 interface TeamUser extends User {
@@ -123,16 +123,24 @@ export default function Index({ users, filters }: PageProps<TeamIndexProps>) {
                                     </td>
                                     {isAdmin && (
                                         <td style={{ textAlign: 'right' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-                                                <Link href={route('team.edit', member.id)} style={{ fontSize: 12 }}>
-                                                    Edit
+                                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
+                                                <Link
+                                                    href={route('team.edit', member.id)}
+                                                    className="btn btn-ghost btn-icon btn-sm"
+                                                    title="Edit"
+                                                    aria-label={`Edit ${member.name}`}
+                                                >
+                                                    <Pencil width={14} height={14} strokeWidth={1.5} />
                                                 </Link>
                                                 {member.id !== auth.user.id && (
                                                     <button
                                                         onClick={() => deactivate(member)}
-                                                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--red)' }}
+                                                        className="btn btn-ghost btn-icon btn-sm"
+                                                        style={{ color: 'var(--red)' }}
+                                                        title="Deactivate"
+                                                        aria-label={`Deactivate ${member.name}`}
                                                     >
-                                                        <UserX width={12} height={12} strokeWidth={1.5} /> Deactivate
+                                                        <UserX width={14} height={14} strokeWidth={1.5} />
                                                     </button>
                                                 )}
                                             </div>

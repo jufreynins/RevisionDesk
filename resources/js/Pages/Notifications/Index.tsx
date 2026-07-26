@@ -1,3 +1,4 @@
+import EmptyState from '@/Components/EmptyState';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { AppNotification, Paginated } from '@/types/models';
@@ -61,10 +62,7 @@ export default function Index({ notifications }: PageProps<NotificationsIndexPro
 
             <div className="card">
                 {notifications.data.length === 0 ? (
-                    <div style={{ padding: '48px 16px', textAlign: 'center' }}>
-                        <Bell width={32} height={32} strokeWidth={1.5} style={{ margin: '0 auto', color: 'var(--text-muted)' }} />
-                        <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>No notifications yet.</p>
-                    </div>
+                    <EmptyState icon={Bell} title="You're all caught up" text="No notifications yet." />
                 ) : (
                     <ul className="activity-list">
                         {notifications.data.map((notification) => {

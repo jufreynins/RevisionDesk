@@ -1,9 +1,10 @@
 import { PriorityBadge, STATUS_OPTIONS, StatusBadge } from '@/Components/Badges';
+import EmptyState from '@/Components/EmptyState';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Paginated, Task, User, Website } from '@/types/models';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Plus, Search, X } from 'lucide-react';
+import { ListTodo, Plus, Search, X } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 
 interface IndexProps {
@@ -166,77 +167,81 @@ export default function Index({ tasks, filters, websites, users }: PageProps<Ind
             </div>
 
             <div className="card" data-tour="task-table">
-                <div className="hidden lg:block">
-                    <div className="table-responsive">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Ticket</th>
-                                    <th>Title</th>
-                                    <th>Website</th>
-                                    <th>Priority</th>
-                                    <th>Status</th>
-                                    <th>Assigned</th>
-                                    <th>Due</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {tasks.data.map((task) => (
-                                    <tr
-                                        key={task.id}
-                                        onClick={() => router.visit(route('tasks.show', task.id))}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <td className="cell-mono">{task.ticket_number}</td>
-                                        <td
-                                            className="cell-strong"
-                                            style={{ maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-                                        >
-                                            {task.title}
-                                        </td>
-                                        <td style={{ color: 'var(--text-muted)' }}>{task.website?.name}</td>
-                                        <td>
+                {tasks.data.length === 0 ? (
+                    <EmptyState
+                        icon={ListTodo}
+                        title="No tasks found"
+                        text={activeFilterCount > 0 ? 'No tasks match the selected filters.' : 'No tasks have been created yet.'}
+                    />
+                ) : (
+                    <>
+                        <div className="hidden lg:block">
+                            <div className="table-responsive">
+                                <table className="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ticket</th>
+                                            <th>Title</th>
+                                            <th>Website</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            <th>Assigned</th>
+                                            <th>Due</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {tasks.data.map((task) => (
+                                            <tr
+                                                key={task.id}
+                                                onClick={() => router.visit(route('tasks.show', task.id))}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <td className="cell-mono">{task.ticket_number}</td>
+                                                <td
+                                                    className="cell-strong"
+                                                    style={{ maxWidth: 280, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                                >
+                                                    {task.title}
+                                                </td>
+                                                <td style={{ color: 'var(--text-muted)' }}>{task.website?.name}</td>
+                                                <td>
+                                                    <PriorityBadge priority={task.priority} />
+                                                </td>
+                                                <td>
+                                                    <StatusBadge status={task.status} />
+                                                </td>
+                                                <td style={{ color: 'var(--text-muted)' }}>{task.assigned_to?.name ?? '—'}</td>
+                                                <td style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>
+                                                    {task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <ul className="activity-list lg:hidden">
+                            {tasks.data.map((task) => (
+                                <li key={task.id}>
+                                    <Link href={route('tasks.show', task.id)} style={{ display: 'block', padding: 16 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{task.ticket_number}</span>
                                             <PriorityBadge priority={task.priority} />
-                                        </td>
-                                        <td>
+                                        </div>
+                                        <p style={{ marginTop: 4, fontWeight: 500 }}>{task.title}</p>
+                                        <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{task.website?.name}</p>
+                                        <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                             <StatusBadge status={task.status} />
-                                        </td>
-                                        <td style={{ color: 'var(--text-muted)' }}>{task.assigned_to?.name ?? '—'}</td>
-                                        <td style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>
-                                            {task.due_date ? new Date(task.due_date).toLocaleDateString() : '—'}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <ul className="activity-list lg:hidden">
-                    {tasks.data.map((task) => (
-                        <li key={task.id}>
-                            <Link href={route('tasks.show', task.id)} style={{ display: 'block', padding: 16 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{task.ticket_number}</span>
-                                    <PriorityBadge priority={task.priority} />
-                                </div>
-                                <p style={{ marginTop: 4, fontWeight: 500 }}>{task.title}</p>
-                                <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{task.website?.name}</p>
-                                <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <StatusBadge status={task.status} />
-                                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                                        {task.due_date ? new Date(task.due_date).toLocaleDateString() : ''}
-                                    </span>
-                                </div>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-
-                {tasks.data.length === 0 && (
-                    <div style={{ padding: '48px 16px', textAlign: 'center', fontSize: 13, color: 'var(--text-muted)' }}>
-                        No tasks match these filters.
-                    </div>
+                                            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                                                {task.due_date ? new Date(task.due_date).toLocaleDateString() : ''}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </>
                 )}
             </div>
 

@@ -1,3 +1,4 @@
+import EmptyState from '@/Components/EmptyState';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Paginated, TaskActivity, Website } from '@/types/models';
@@ -63,10 +64,7 @@ export default function Index({ activities, websites, filters }: PageProps<Activ
 
             <div className="card">
                 {activities.data.length === 0 ? (
-                    <div style={{ padding: '48px 16px', textAlign: 'center' }}>
-                        <Activity width={32} height={32} strokeWidth={1.5} style={{ margin: '0 auto', color: 'var(--text-muted)' }} />
-                        <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>No activity yet.</p>
-                    </div>
+                    <EmptyState icon={Activity} title="No activity yet" text="Task updates will show up here as work happens." />
                 ) : (
                     <ul className="activity-list">
                         {activities.data.map((activity) => (

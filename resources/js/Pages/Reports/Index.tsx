@@ -1,3 +1,5 @@
+import { PRIORITY_CHART_COLOR } from '@/Components/Badges';
+import { CHART_CATEGORY_TICK_STYLE, CHART_CURSOR_FILL, CHART_GRID_STROKE, CHART_PALETTE, CHART_TICK_STYLE, CHART_TOOLTIP_STYLE } from '@/Components/Charts';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -16,15 +18,6 @@ import {
     YAxis,
 } from 'recharts';
 import { FormEvent, useState } from 'react';
-
-const CATEGORICAL = ['#2a78d6', '#008300', '#e87ba4', '#eda100', '#1baf7a', '#eb6834', '#4a3aa7', '#e34948'];
-const PRIORITY_COLORS: Record<string, string> = {
-    low: '#a1a1aa',
-    normal: '#2a78d6',
-    high: '#eda100',
-    urgent: '#e34948',
-    critical: '#7f1d1d',
-};
 
 interface ReportsIndexProps {
     filters: { from: string; to: string };
@@ -138,11 +131,11 @@ export default function Index({
                 <ChartCard title="Tasks Completed Over Time">
                     <ResponsiveContainer>
                         <LineChart data={tasksCompletedByDate}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e1e0d9" vertical={false} />
-                            <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#898781' }} />
-                            <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#898781' }} />
-                            <Tooltip />
-                            <Line type="monotone" dataKey="total" name="Completed" stroke={CATEGORICAL[0]} strokeWidth={2} dot={{ r: 3 }} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} vertical={false} />
+                            <XAxis dataKey="date" tick={CHART_TICK_STYLE} />
+                            <YAxis allowDecimals={false} tick={CHART_TICK_STYLE} />
+                            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR_FILL} />
+                            <Line type="monotone" dataKey="total" name="Completed" stroke={CHART_PALETTE[0]} strokeWidth={2} dot={{ r: 3 }} />
                         </LineChart>
                     </ResponsiveContainer>
                 </ChartCard>
@@ -150,11 +143,11 @@ export default function Index({
                 <ChartCard title="Open Tasks by Website">
                     <ResponsiveContainer>
                         <BarChart data={websiteData} layout="vertical" margin={{ left: 16 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e1e0d9" horizontal={false} />
-                            <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: '#898781' }} />
-                            <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11, fill: '#52514e' }} />
-                            <Tooltip />
-                            <Bar dataKey="total" name="Open Tasks" fill={CATEGORICAL[0]} radius={[0, 4, 4, 0]} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} horizontal={false} />
+                            <XAxis type="number" allowDecimals={false} tick={CHART_TICK_STYLE} />
+                            <YAxis type="category" dataKey="name" width={120} tick={CHART_CATEGORY_TICK_STYLE} />
+                            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR_FILL} />
+                            <Bar dataKey="total" name="Open Tasks" fill={CHART_PALETTE[0]} radius={[0, 4, 4, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </ChartCard>
@@ -162,13 +155,16 @@ export default function Index({
                 <ChartCard title="Tasks by Priority">
                     <ResponsiveContainer>
                         <BarChart data={priorityData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e1e0d9" vertical={false} />
-                            <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#898781' }} />
-                            <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#898781' }} />
-                            <Tooltip />
+                            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} vertical={false} />
+                            <XAxis dataKey="name" tick={CHART_TICK_STYLE} />
+                            <YAxis allowDecimals={false} tick={CHART_TICK_STYLE} />
+                            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR_FILL} />
                             <Bar dataKey="total" name="Tasks" radius={[4, 4, 0, 0]}>
                                 {priorityData.map((entry) => (
-                                    <Cell key={entry.name} fill={PRIORITY_COLORS[entry.name] ?? CATEGORICAL[0]} />
+                                    <Cell
+                                        key={entry.name}
+                                        fill={PRIORITY_CHART_COLOR[entry.name as keyof typeof PRIORITY_CHART_COLOR] ?? CHART_PALETTE[0]}
+                                    />
                                 ))}
                             </Bar>
                         </BarChart>
@@ -178,17 +174,17 @@ export default function Index({
                 <ChartCard title="Tasks by Type">
                     <ResponsiveContainer>
                         <BarChart data={typeData} layout="vertical" margin={{ left: 16 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e1e0d9" horizontal={false} />
-                            <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: '#898781' }} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} horizontal={false} />
+                            <XAxis type="number" allowDecimals={false} tick={CHART_TICK_STYLE} />
                             <YAxis
                                 type="category"
                                 dataKey="name"
                                 width={140}
-                                tick={{ fontSize: 10, fill: '#52514e' }}
+                                tick={{ fontSize: 10, fill: 'var(--text-secondary)' }}
                                 tickFormatter={(v: string) => v.replace(/_/g, ' ')}
                             />
-                            <Tooltip />
-                            <Bar dataKey="total" name="Tasks" fill={CATEGORICAL[0]} radius={[0, 4, 4, 0]} />
+                            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR_FILL} />
+                            <Bar dataKey="total" name="Tasks" fill={CHART_PALETTE[0]} radius={[0, 4, 4, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </ChartCard>
@@ -196,11 +192,11 @@ export default function Index({
                 <ChartCard title="Tasks Completed by Team Member">
                     <ResponsiveContainer>
                         <BarChart data={memberData} layout="vertical" margin={{ left: 16 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e1e0d9" horizontal={false} />
-                            <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: '#898781' }} />
-                            <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11, fill: '#52514e' }} />
-                            <Tooltip />
-                            <Bar dataKey="total" name="Completed" fill={CATEGORICAL[1]} radius={[0, 4, 4, 0]} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} horizontal={false} />
+                            <XAxis type="number" allowDecimals={false} tick={CHART_TICK_STYLE} />
+                            <YAxis type="category" dataKey="name" width={120} tick={CHART_CATEGORY_TICK_STYLE} />
+                            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR_FILL} />
+                            <Bar dataKey="total" name="Completed" fill={CHART_PALETTE[1]} radius={[0, 4, 4, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </ChartCard>
@@ -208,14 +204,14 @@ export default function Index({
                 <ChartCard title="Estimated vs Actual Time (minutes)">
                     <ResponsiveContainer>
                         <BarChart data={estimatedVsActualData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e1e0d9" vertical={false} />
-                            <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#898781' }} />
-                            <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#898781' }} />
-                            <Tooltip />
+                            <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} vertical={false} />
+                            <XAxis dataKey="name" tick={CHART_TICK_STYLE} />
+                            <YAxis allowDecimals={false} tick={CHART_TICK_STYLE} />
+                            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR_FILL} />
                             <Legend />
                             <Bar dataKey="minutes" name="Minutes" radius={[4, 4, 0, 0]}>
                                 {estimatedVsActualData.map((entry, index) => (
-                                    <Cell key={entry.name} fill={CATEGORICAL[index]} />
+                                    <Cell key={entry.name} fill={CHART_PALETTE[index]} />
                                 ))}
                             </Bar>
                         </BarChart>

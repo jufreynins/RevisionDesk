@@ -1,4 +1,6 @@
 import { PriorityBadge, STATUS_CHART_COLOR, STATUS_OPTIONS } from '@/Components/Badges';
+import { CHART_CATEGORY_TICK_STYLE, CHART_TICK_STYLE, CHART_TOOLTIP_STYLE } from '@/Components/Charts';
+import EmptyState from '@/Components/EmptyState';
 import AuthenticatedLayout, { PageHeader } from '@/Layouts/AuthenticatedLayout';
 import { consumeAutoStart } from '@/tour/tourStore';
 import { useTour } from '@/tour/useTour';
@@ -72,15 +74,6 @@ function initials(name: string): string {
 const STATUS_LABELS: Record<string, string> = Object.fromEntries(STATUS_OPTIONS.map((o) => [o.value, o.label]));
 const STATUS_ORDER = STATUS_OPTIONS.map((o) => o.value);
 
-const CHART_TOOLTIP_STYLE = {
-    background: 'var(--bg-surface)',
-    border: '1px solid var(--border-color)',
-    borderRadius: 6,
-    fontSize: 12,
-};
-const CHART_TICK_STYLE = { fontSize: 11, fill: 'var(--text-muted)' };
-const CHART_CATEGORY_TICK_STYLE = { fontSize: 11, fill: 'var(--text-secondary)' };
-
 const AVATAR_PALETTE = [
     'linear-gradient(135deg,var(--primary),var(--primary-dk))',
     'linear-gradient(135deg,var(--blue),#0554a3)',
@@ -99,18 +92,6 @@ function SectionHeader({ icon: Icon, title, subtitle }: { icon: LucideIcon; titl
                 </div>
                 {subtitle && <div className="card-subtitle">{subtitle}</div>}
             </div>
-        </div>
-    );
-}
-
-function EmptyState({ icon: Icon, title, text }: { icon: LucideIcon; title: string; text: string }) {
-    return (
-        <div className="empty-state">
-            <div className="empty-state-icon">
-                <Icon width={22} height={22} strokeWidth={1.5} />
-            </div>
-            <div className="empty-state-title">{title}</div>
-            <div className="empty-state-text">{text}</div>
         </div>
     );
 }

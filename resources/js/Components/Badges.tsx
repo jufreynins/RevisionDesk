@@ -118,3 +118,10 @@ export const STATUS_CHART_COLOR: Record<TaskStatus, string> = Object.fromEntries
 export const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = Object.entries(PRIORITY_CONFIG).map(
     ([value, { label }]) => ({ value: value as TaskPriority, label }),
 );
+
+export const PRIORITY_CHART_COLOR: Record<TaskPriority, string> = {
+    ...(Object.fromEntries(
+        Object.entries(PRIORITY_CONFIG).map(([priority, config]) => [priority, STATUS_DOT_COLOR[config.tone]]),
+    ) as Record<TaskPriority, string>),
+    critical: '#7f1d1d',
+};

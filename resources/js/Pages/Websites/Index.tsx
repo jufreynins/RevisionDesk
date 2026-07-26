@@ -1,3 +1,4 @@
+import EmptyState from '@/Components/EmptyState';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Paginated, Website } from '@/types/models';
@@ -90,10 +91,11 @@ export default function Index({ websites, filters }: PageProps<WebsitesIndexProp
 
             {websites.data.length === 0 ? (
                 <div className="card" data-tour="website-list">
-                    <div className="card-body" style={{ textAlign: 'center', padding: '48px 16px' }}>
-                        <Globe width={32} height={32} strokeWidth={1.5} style={{ margin: '0 auto', color: 'var(--text-muted)' }} />
-                        <p style={{ marginTop: 8, fontSize: 13, color: 'var(--text-muted)' }}>No websites found.</p>
-                    </div>
+                    <EmptyState
+                        icon={Globe}
+                        title="No websites found"
+                        text={filters.search || filters.status ? 'Try adjusting your search or filters.' : 'Add your first website to get started.'}
+                    />
                 </div>
             ) : (
                 <div className="row col-3" data-tour="website-list">
