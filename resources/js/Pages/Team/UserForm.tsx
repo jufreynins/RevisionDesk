@@ -78,7 +78,7 @@ export default function UserForm({ member, submitUrl, method, submitLabel }: Use
                         </div>
                     </div>
 
-                    {!member && (
+                    {!member ? (
                         <div className="form-row">
                             <div className="form-group">
                                 <InputLabel htmlFor="password" value="Password" />
@@ -101,6 +101,23 @@ export default function UserForm({ member, submitUrl, method, submitLabel }: Use
                                     onChange={(e) => setData('password_confirmation', e.target.value)}
                                     required
                                 />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="form-group">
+                            <InputLabel value="Password" />
+                            <div
+                                style={{
+                                    fontSize: 12.5,
+                                    color: 'var(--text-muted)',
+                                    background: 'var(--bg-surface-secondary)',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: 'var(--radius-sm)',
+                                    padding: '8px 12px',
+                                }}
+                            >
+                                Can&rsquo;t be changed here. {member.name} can update their own password from{' '}
+                                <strong>Profile</strong> after logging in.
                             </div>
                         </div>
                     )}
