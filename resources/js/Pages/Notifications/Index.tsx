@@ -64,40 +64,49 @@ export default function Index({ notifications }: PageProps<NotificationsIndexPro
                 {notifications.data.length === 0 ? (
                     <EmptyState icon={Bell} title="You're all caught up" text="No notifications yet." />
                 ) : (
-                    <ul className="activity-list">
-                        {notifications.data.map((notification) => {
-                            const Icon = ICONS[notification.data.type] ?? Bell;
-                            const isUnread = !notification.read_at;
+                    <div className="card-body" style={{ padding: '8px 16px' }}>
+                        <ul className="activity-list">
+                            {notifications.data.map((notification) => {
+                                const Icon = ICONS[notification.data.type] ?? Bell;
+                                const isUnread = !notification.read_at;
 
-                            return (
-                                <li key={notification.id} style={{ background: isUnread ? 'var(--bg-surface-secondary, var(--surface-2))' : undefined }}>
-                                    <button onClick={() => markAsRead(notification)} className="activity-item" style={{ width: '100%', textAlign: 'left' }}>
-                                        <div
-                                            className="activity-avatar"
-                                            style={{
-                                                background: isUnread ? 'var(--primary)' : 'var(--bg-surface-secondary, var(--surface-2))',
-                                                color: isUnread ? '#fff' : 'var(--text-muted)',
-                                            }}
-                                        >
-                                            <Icon width={16} height={16} strokeWidth={1.5} />
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div className="activity-body" style={{ fontWeight: isUnread ? 600 : 400 }}>
-                                                {notification.data.message}
+                                return (
+                                    <li
+                                        key={notification.id}
+                                        style={{
+                                            margin: '0 -16px',
+                                            padding: '0 16px',
+                                            background: isUnread ? 'var(--bg-surface-secondary, var(--surface-2))' : undefined,
+                                        }}
+                                    >
+                                        <button onClick={() => markAsRead(notification)} className="activity-item" style={{ width: '100%', textAlign: 'left' }}>
+                                            <div
+                                                className="activity-avatar"
+                                                style={{
+                                                    background: isUnread ? 'var(--primary)' : 'var(--bg-surface-secondary, var(--surface-2))',
+                                                    color: isUnread ? '#fff' : 'var(--text-muted)',
+                                                }}
+                                            >
+                                                <Icon width={16} height={16} strokeWidth={1.5} />
                                             </div>
-                                            <div className="activity-time">
-                                                {notification.data.actor_name && `${notification.data.actor_name} · `}
-                                                {new Date(notification.created_at).toLocaleString()}
+                                            <div style={{ flex: 1 }}>
+                                                <div className="activity-body" style={{ fontWeight: isUnread ? 600 : 400 }}>
+                                                    {notification.data.message}
+                                                </div>
+                                                <div className="activity-time">
+                                                    {notification.data.actor_name && `${notification.data.actor_name} · `}
+                                                    {new Date(notification.created_at).toLocaleString()}
+                                                </div>
                                             </div>
-                                        </div>
-                                        {isUnread && (
-                                            <span style={{ height: 8, width: 8, flexShrink: 0, borderRadius: '50%', background: 'var(--primary)' }} />
-                                        )}
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ul>
+                                            {isUnread && (
+                                                <span style={{ height: 8, width: 8, flexShrink: 0, borderRadius: '50%', background: 'var(--primary)' }} />
+                                            )}
+                                        </button>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
                 )}
             </div>
 

@@ -66,21 +66,23 @@ export default function Index({ activities, websites, filters }: PageProps<Activ
                 {activities.data.length === 0 ? (
                     <EmptyState icon={Activity} title="No activity yet" text="Task updates will show up here as work happens." />
                 ) : (
-                    <ul className="activity-list">
-                        {activities.data.map((activity) => (
-                            <li className="activity-item" key={activity.id} style={{ justifyContent: 'space-between' }}>
-                                <div>
-                                    <Link href={route('tasks.show', activity.task_id)} className="activity-body" style={{ fontWeight: 600 }}>
-                                        {activity.task?.ticket_number} · {activity.task?.title}
-                                    </Link>
-                                    <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{describeActivity(activity)}</p>
-                                </div>
-                                <span style={{ flexShrink: 0, fontSize: 11, color: 'var(--text-muted)' }}>
-                                    {new Date(activity.created_at).toLocaleString()}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
+                    <div className="card-body" style={{ padding: '8px 16px' }}>
+                        <ul className="activity-list">
+                            {activities.data.map((activity) => (
+                                <li className="activity-item" key={activity.id} style={{ justifyContent: 'space-between' }}>
+                                    <div>
+                                        <Link href={route('tasks.show', activity.task_id)} className="activity-body" style={{ fontWeight: 600 }}>
+                                            {activity.task?.ticket_number} · {activity.task?.title}
+                                        </Link>
+                                        <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{describeActivity(activity)}</p>
+                                    </div>
+                                    <span style={{ flexShrink: 0, fontSize: 11, color: 'var(--text-muted)' }}>
+                                        {new Date(activity.created_at).toLocaleString()}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 )}
             </div>
 
