@@ -96,6 +96,15 @@ function SectionHeader({ icon: Icon, title, subtitle }: { icon: LucideIcon; titl
     );
 }
 
+const STAT_CARD_BG: Record<string, string> = {
+    teal: 'var(--primary-lt)',
+    blue: 'var(--blue-lt)',
+    red: 'var(--red-lt)',
+    yellow: 'var(--yellow-lt)',
+    purple: 'var(--purple-lt)',
+    green: 'var(--green-lt)',
+};
+
 const STAT_CARDS = (stats: DashboardProps['stats']) => [
     { label: 'Open Tasks', value: stats.totalOpenTasks, icon: ListTodo, color: 'teal' },
     { label: 'My Tasks', value: stats.myTasksCount, icon: Users, color: 'blue' },
@@ -175,7 +184,7 @@ export default function Dashboard({
                     {STAT_CARDS(stats)
                         .slice(0, 3)
                         .map((card) => (
-                            <div className="card" key={card.label}>
+                            <div className="card" key={card.label} style={{ background: STAT_CARD_BG[card.color] }}>
                                 <div className="stat">
                                     <div className={`stat-icon ${card.color}`}>
                                         <card.icon width={20} height={20} strokeWidth={1.5} />
@@ -195,7 +204,7 @@ export default function Dashboard({
                     {STAT_CARDS(stats)
                         .slice(3)
                         .map((card) => (
-                            <div className="card" key={card.label}>
+                            <div className="card" key={card.label} style={{ background: STAT_CARD_BG[card.color] }}>
                                 <div className="stat">
                                     <div className={`stat-icon ${card.color}`}>
                                         <card.icon width={20} height={20} strokeWidth={1.5} />

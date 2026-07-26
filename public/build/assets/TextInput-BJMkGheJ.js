@@ -1,1 +1,0 @@
-import{b as t,j as u}from"./app-B_WGeMR0.js";const l=t.forwardRef(function({type:s="text",className:f="",isFocused:r=!1,...o},n){const e=t.useRef(null);return t.useImperativeHandle(n,()=>({focus:()=>e.current?.focus()})),t.useEffect(()=>{r&&e.current?.focus()},[r]),u.jsx("input",{...o,type:s,className:`form-control ${f}`,ref:e})});export{l as T};
