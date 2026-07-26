@@ -106,18 +106,11 @@ export default function UserForm({ member, submitUrl, method, submitLabel }: Use
                     ) : (
                         <div className="form-group">
                             <InputLabel value="Password" />
-                            <div
-                                style={{
-                                    fontSize: 12.5,
-                                    color: 'var(--text-muted)',
-                                    background: 'var(--bg-surface-secondary)',
-                                    border: '1px solid var(--border-color)',
-                                    borderRadius: 'var(--radius-sm)',
-                                    padding: '8px 12px',
-                                }}
-                            >
-                                Can&rsquo;t be changed here. {member.name} can update their own password from{' '}
-                                <strong>Profile</strong> after logging in.
+                            <div className="card" style={{ padding: '10px 14px' }}>
+                                <div style={{ fontSize: 13, fontWeight: 600 }}>You don&rsquo;t have access to change this password</div>
+                                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 3 }}>
+                                    {member.name} can change it themselves from their <strong>Profile</strong> page after logging in.
+                                </div>
                             </div>
                         </div>
                     )}
