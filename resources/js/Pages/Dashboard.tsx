@@ -170,7 +170,7 @@ export default function Dashboard({
         >
             <Head title="Dashboard" />
 
-            <div data-tour="dashboard-stats">
+            <div data-tour="dashboard-stats" style={{ marginBottom: 16 }}>
                 <div className="row col-3">
                     {STAT_CARDS(stats)
                         .slice(0, 3)
